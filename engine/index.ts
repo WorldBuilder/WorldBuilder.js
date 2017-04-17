@@ -1,6 +1,7 @@
 
 interface Unit {
   id: number,
+  type: 'player' | 'enemy',
   name: string,
   pos: { x: number, y: number },
   currentHp: number,
@@ -11,20 +12,20 @@ interface Unit {
   }
 }
 
-type Player = Unit
-type Enemy  = Unit & { aiType: string }
+type Player = Unit & { type: 'player' }
+type Enemy  = Unit & { aiType: string, type: 'enemy' }
 type UnitId = number
 
 type TimelinePos = number // neg is wait time, 0 is decision time, pos is act time
 type Timeline = Map<UnitId,TimelinePos>
 
-interface Game {
+
+export interface GameState {
   map: {
     width: number,
     height: number,
   },
-  players: Map<UnitId,Player>,
-  enemies: Map<UnitId,Enemy>,
+  units: Map<UnitId, Player | Enemy>,
 
   // number is where they are on timeline
   timeline: Timeline
@@ -32,14 +33,15 @@ interface Game {
 
 // ----
 
-var game: Game = {
+export var initialGameState: GameState = {
   map: {
     width: 600,
     height: 400,
   },
-  players: new Map<UnitId,Player>([
+  units: new Map<UnitId, Player | Enemy>([
     [10, {
       id: 10,
+      type: 'player',
       name: 'Alice',
       currentHp: 20,
       maxHp: 20,
@@ -48,11 +50,10 @@ var game: Game = {
         speed: 10,
         str: 10,
       }
-    }]
-  ]),
-  enemies: new Map<UnitId,Enemy>([
+    }],
     [20, {
       aiType: 'passive',
+      type: 'enemy',
       id: 20,
       name: 'Goblin',
       currentHp: 20,
@@ -71,11 +72,16 @@ var game: Game = {
 }
 
 
-function gameStep (game: Game) {
+export function gameStep (game: GameState) {
+
   for ( let [id, pos] of game.timeline.entries() ) {
     console.log("Id,pos:", id, pos)
-    var unit = game.players.get(id) || game.enemies.get(id)
-  }
-}
+    var unit = game.units.get(id)
 
-gameStep(game)
+    if ( ! unit ) { continue }
+
+    game.timeline.set(id, pos + unit.stats.speed)
+  }
+
+  return game
+}
