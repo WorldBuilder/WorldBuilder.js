@@ -1,6 +1,6 @@
 
 interface Unit {
-  id: number,
+  id: string,
   type: 'player' | 'enemy',
   name: string,
   pos: { x: number, y: number },
@@ -14,10 +14,10 @@ interface Unit {
 
 type Player = Unit & { type: 'player' }
 type Enemy  = Unit & { aiType: string, type: 'enemy' }
-type UnitId = number
+type UnitId = string
 
 type TimelinePos = number // neg is wait time, 0 is decision time, pos is act time
-type Timeline = Map<UnitId,TimelinePos>
+type Timeline = Record<UnitId, TimelinePos>
 
 
 export interface GameState {
@@ -25,7 +25,7 @@ export interface GameState {
     width: number,
     height: number,
   },
-  units: Map<UnitId, Player | Enemy>,
+  units: Record<UnitId, Player | Enemy>,
 
   // number is where they are on timeline
   timeline: Timeline,
@@ -47,9 +47,9 @@ export var initialGameState: GameState = {
     width: 600,
     height: 400,
   },
-  units: new Map<UnitId, Player | Enemy>([
-    [10, {
-      id: 10,
+  units: {
+    '10': {
+      id: '10',
       type: 'player',
       name: 'Alice',
       currentHp: 20,
@@ -59,11 +59,11 @@ export var initialGameState: GameState = {
         speed: 10,
         str: 10,
       }
-    }],
-    [20, {
+    },
+    '20': {
       aiType: 'passive',
       type: 'enemy',
-      id: 20,
+      id: '20',
       name: 'Goblin',
       currentHp: 20,
       maxHp: 20,
@@ -72,12 +72,12 @@ export var initialGameState: GameState = {
         speed: 12,
         str: 10,
       }
-    }]
-  ]),
-  timeline: new Map<UnitId,TimelinePos>([
-    [10, -251],
-    [20, -200],
-  ]),
+    }
+  },
+  timeline: {
+    '10': -251,
+    '20': -200,
+  },
   pendingDecision: null,
 }
 
@@ -91,9 +91,11 @@ export function gameStep (game: GameState) {
     return game
   }
 
-  for ( let [id, pos] of game.timeline.entries() ) {
+  for ( let id in game.timeline ) {
+    var pos = game.timeline[id]
+
     console.log("Id,pos:", id, pos)
-    var unit = game.units.get(id)
+    var unit = game.units[id]
 
     if ( ! unit ) { continue }
 
@@ -101,12 +103,12 @@ export function gameStep (game: GameState) {
       , newPos = pos + unit.stats.speed
       , noLongerWaiting = newPos >= 0
 
-    game.timeline.set(id, newPos)
+    game.timeline[id] = newPos
 
     if ( unit.type === 'player' && wasWaiting && noLongerWaiting ) {
       // Goal: Pause
       // Goal: Prompt player to decide their decision
-      game.timeline.set(id, 0)
+      game.timeline[id] = 0
       game.pendingDecision = { unitId: id, action: null }
     }
   }
