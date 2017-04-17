@@ -34,18 +34,19 @@ export default function configWebsockets (server: Server) {
 }
 
 
+var x=0;
 var stateStream = multicast(
-  most.generate(gameLoop, 100).skipRepeats()
+  most.generate(gameLoop, 33)
+    .skipRepeats()
+    .tap( _ => console.log("STEP", x++, state.timeline) )
 )
 
-var x=0;
 
 var state = GameEngine.initialGameState
 
 function * gameLoop (frame: number) {
 
   while (true) {
-    console.log("STEP", x++, state.timeline)
     state = GameEngine.gameStep(state)
     yield delayPromise(frame, state)
   }

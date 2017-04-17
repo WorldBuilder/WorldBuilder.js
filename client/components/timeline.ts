@@ -18,6 +18,7 @@ export default {
     vnode.state.width = vnode.dom.clientWidth - padding*2
   },
   view(vnode) {
+    console.log("Width", vnode.state.width)
     var game = vnode.attrs.game
 
     return m('.timeline',
@@ -43,7 +44,7 @@ export default {
         var percentPos = 1 - Math.abs(pos / max)
 
         var style = {
-          transform: `translateX(${ timelineWaitWidth * percentPos + padding }px)`,
+          transform: `translateX(${ (timelineWaitWidth * percentPos || 0) + padding }px)`,
           marginTop: (unit.type=='player' ? 5 : -25) + 'px',
         }
 

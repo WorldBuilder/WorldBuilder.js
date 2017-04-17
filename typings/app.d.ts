@@ -1,13 +1,17 @@
 
 declare namespace App {
+  export type UnitId = string
+
   interface Unit {
-    id: string,
+    id: UnitId,
     type: 'player' | 'enemy',
     name: string,
+    size: number,
     pos: { x: number, y: number },
     currentHp: number,
     maxHp: number,
     stats: {
+      resilience: number,
       speed: number,
       str: number,
     }
@@ -15,11 +19,20 @@ declare namespace App {
 
   type Player = Unit & { type: 'player' }
   type Enemy  = Unit & { aiType: string, type: 'enemy' }
-  type UnitId = string
 
   type TimelinePos = number // neg is wait time, 0 is decision time, pos is act time
   type Timeline = Record<UnitId, TimelinePos>
 
+
+  type ActionState
+    = {
+        type: 'passive'
+      }
+    | {
+        type: 'target',
+        target: UnitId,
+        action: 'move' | 'attack' | 'cast' | 'defend'
+      }
 
   export interface GameState {
     map: {
@@ -39,6 +52,8 @@ declare namespace App {
       unitId: UnitId, // Which unit needs to make the decision
       action: null | string, // When a player makes a decision, this gets filled.
     },
+
+    intents: Record<UnitId, ActionState>
 
     meta: {
       timelineWaitSize: number,

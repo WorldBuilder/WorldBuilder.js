@@ -15,14 +15,36 @@ body {
     "sidebar timeline";
 }
 
-.main {
-  grid-area: main;
-}
 .sidebar {
   grid-area: sidebar;
   background: #ccc;
 }
 
+
+
+
+
+/**
+ * Map
+ */
+.main {
+  grid-area: main;
+  overflow: auto;
+}
+.map {
+  position: relative;
+}
+.map > .unit {
+  background: #ccc;
+  border-radius: 9999px;
+  position: absolute;
+  text-align: center;
+}
+
+
+/**
+ * Timeline
+ */
 .timeline {
   grid-area: timeline;
   background: #f4f4f4;
@@ -42,7 +64,7 @@ body {
 
 .timeline > .unit {
   position: absolute; left: 0; top: 50%;
-  transition: all 0.25s;
+  transition: all 0.5s;
 }
 .timeline > .unit span.marker::after {
   content: '╿';
