@@ -1,0 +1,27 @@
+{
+  "name": "world-builders",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "./node_modules/.bin/ts-node server/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "7.8.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@most/multicast": "^1.2.5",
+    "@types/deep-diff": "0.0.30",
+    "@types/node": "^7.0.12",
+    "deep-diff": "^0.3.4",
+    "most": "^1.2.2",
+    "object-observer": "github:gilbert/object-observer-js",
+    "rx": "^4.1.0",
+    "ts-node": "^3.0.2",
+    "typescript": "^2.2.2"
+  }
+}
