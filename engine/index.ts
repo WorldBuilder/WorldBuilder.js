@@ -28,7 +28,16 @@ export interface GameState {
   units: Map<UnitId, Player | Enemy>,
 
   // number is where they are on timeline
-  timeline: Timeline
+  timeline: Timeline,
+
+  //
+  // During battle, only one unit can make a decision at a time.
+  // The battle pauses as long as there is a pending decision with a null action.
+  //
+  pendingDecision: null | {
+    unitId: UnitId, // Which unit needs to make the decision
+    action: null | string, // When a player makes a decision, this gets filled.
+  }
 }
 
 // ----
@@ -66,13 +75,21 @@ export var initialGameState: GameState = {
     }]
   ]),
   timeline: new Map<UnitId,TimelinePos>([
-    [10, -250],
+    [10, -251],
     [20, -200],
   ]),
+  pendingDecision: null,
 }
 
 
 export function gameStep (game: GameState) {
+
+  //
+  // Pause when a player needs to make a decision
+  //
+  if ( game.pendingDecision && game.pendingDecision.action === null ) {
+    return game
+  }
 
   for ( let [id, pos] of game.timeline.entries() ) {
     console.log("Id,pos:", id, pos)
@@ -80,7 +97,18 @@ export function gameStep (game: GameState) {
 
     if ( ! unit ) { continue }
 
-    game.timeline.set(id, pos + unit.stats.speed)
+    var wasWaiting = pos < 0
+      , newPos = pos + unit.stats.speed
+      , noLongerWaiting = newPos >= 0
+
+    game.timeline.set(id, newPos)
+
+    if ( unit.type === 'player' && wasWaiting && noLongerWaiting ) {
+      // Goal: Pause
+      // Goal: Prompt player to decide their decision
+      game.timeline.set(id, 0)
+      game.pendingDecision = { unitId: id, action: null }
+    }
   }
 
   return game
