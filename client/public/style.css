@@ -1,11 +1,53 @@
 
-.timeline {
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#ui {
+  height: 100vh;
+  display: grid;
+  overflow: hidden;
+  grid-template-rows: 1fr 80px;
+  grid-template-columns: 300px 1fr;
+  grid-template-areas:
+    "sidebar main"
+    "sidebar timeline";
+}
+
+.main {
+  grid-area: main;
+}
+.sidebar {
+  grid-area: sidebar;
   background: #ccc;
-  height: 4px;
+}
+
+.timeline {
+  grid-area: timeline;
+  background: #f4f4f4;
   position: relative;
 }
 
+
+.timeline .line {
+  background: #ccc;
+  height: 4px;
+  position: absolute; top: 50%;
+}
+.timeline .line.action {
+  background: #800;
+}
+
+
 .timeline > .unit {
-  position: absolute; left: 0;
+  position: absolute; left: 0; top: 50%;
   transition: all 0.25s;
 }
+.timeline > .unit span.marker::after {
+  content: '╿';
+  display: inline-block;
+  position: relative; left: -3px;
+}
+.timeline > .unit.player span.marker::after { top: -2px; }
+.timeline > .unit.enemy span.marker::after { transform: rotate(180deg); top: 5px; }
