@@ -4,6 +4,7 @@
     "target": "ES2017",
     "noImplicitAny": true,
     "strictNullChecks": true,
-    "sourceMap": false
+    "sourceMap": false,
+    "lib": ["DOM", "ES2016"]
   }
 }
