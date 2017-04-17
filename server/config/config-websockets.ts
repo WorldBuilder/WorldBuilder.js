@@ -14,6 +14,7 @@ export default function configWebsockets (server: Server) {
 
   io.on('connection', socket => {
     console.log("a user connected")
+    socket.emit('gs', state)
 
     var sub = stateStream.subscribe({
       next: (state) => socket.emit('gs', state),
@@ -33,12 +34,15 @@ export default function configWebsockets (server: Server) {
 }
 
 
-var stateStream = multicast( most.generate(gameLoop, 1000) )
+var stateStream = multicast(
+  most.generate(gameLoop, 100).skipRepeats()
+)
 
 var x=0;
 
+var state = GameEngine.initialGameState
+
 function * gameLoop (frame: number) {
-  var state = GameEngine.initialGameState
 
   while (true) {
     console.log("STEP", x++, state.timeline)

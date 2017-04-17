@@ -1,0 +1,11 @@
+
+.timeline {
+  background: #ccc;
+  height: 4px;
+  position: relative;
+}
+
+.timeline > .unit {
+  position: absolute; left: 0;
+  transition: all 0.25s;
+}

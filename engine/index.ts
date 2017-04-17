@@ -37,6 +37,10 @@ export interface GameState {
   pendingDecision: null | {
     unitId: UnitId, // Which unit needs to make the decision
     action: null | string, // When a player makes a decision, this gets filled.
+  },
+
+  meta: {
+    timelineWaitSize: number,
   }
 }
 
@@ -79,6 +83,10 @@ export var initialGameState: GameState = {
     '20': -200,
   },
   pendingDecision: null,
+
+  meta: {
+    timelineWaitSize: 300,
+  },
 }
 
 
@@ -94,7 +102,6 @@ export function gameStep (game: GameState) {
   for ( let id in game.timeline ) {
     var pos = game.timeline[id]
 
-    console.log("Id,pos:", id, pos)
     var unit = game.units[id]
 
     if ( ! unit ) { continue }
@@ -106,12 +113,10 @@ export function gameStep (game: GameState) {
     game.timeline[id] = newPos
 
     if ( unit.type === 'player' && wasWaiting && noLongerWaiting ) {
-      // Goal: Pause
-      // Goal: Prompt player to decide their decision
       game.timeline[id] = 0
       game.pendingDecision = { unitId: id, action: null }
     }
   }
 
-  return game
+  return { ...game }
 }
