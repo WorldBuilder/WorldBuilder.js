@@ -21,23 +21,34 @@ export default {
 
     return m('.map',
 
-      Object.keys(game.units).map( unitId => {
-        var unit = game.units[unitId]
-        if ( ! unit ) return;
-
-        var pos = unit.pos
-
-        var style = {
-          transform: `translate(${ pos.x }px, ${ pos.y }px)`,
-          width: unit.size*5 + 'px',
-          height: unit.size*5 + 'px',
-          lineHeight: unit.size*5 + 'px',
-        }
-
-        return m('.unit', { style: style, class: unit.type }, unit.name[0].toUpperCase())
-      })
+      Object.keys(game.units).map( unitId =>
+        game.units[unitId] && renderUnit(game, game.units[unitId])
+      )
     )
   }
 } as m.Component<Attrs, State>
 
 
+function renderUnit (game: App.GameState, unit: App.Unit) {
+  var pos = unit.pos
+  var unitSize = unit.size*5 // Scale for visibility
+
+  var style = {
+    transform: `translate(${ pos.x }px, ${ pos.y }px)`,
+    width: unitSize + 'px',
+    height: unitSize + 'px',
+    lineHeight: unit.size*5 + 'px',
+  }
+
+  var hp = {
+    max: { width: `${unitSize - 6}px`, left: '3px' },
+    current: { width: `${unit.currentHp / unit.maxHp * 100}%` },
+  }
+
+  return m('.unit', { style: style, class: unit.type },
+
+    m('.bar-max', { style: hp.max }, m('.bar', { style: hp.current })),
+
+    unit.name[0].toUpperCase()
+  )
+}

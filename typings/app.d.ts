@@ -45,13 +45,11 @@ declare namespace App {
     timeline: Timeline,
 
     //
-    // During battle, only one unit can make a decision at a time.
-    // The battle pauses as long as there is a pending decision with a null action.
+    // During battle, the game pauses as long as there is a decision to be made.
     //
-    pendingDecision: null | {
-      unitId: UnitId, // Which unit needs to make the decision
+    pendingDecisions: Record<UnitId, {
       action: null | string, // When a player makes a decision, this gets filled.
-    },
+    }>,
 
     intents: Record<UnitId, ActionState>
 

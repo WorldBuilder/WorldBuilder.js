@@ -25,7 +25,7 @@ export var initialGameState: App.GameState = {
       id: '20',
       name: 'Goblin',
       size: 8,
-      currentHp: 20,
+      currentHp: 14,
       maxHp: 20,
       pos: { x: 300, y: 200 },
       stats: {
@@ -39,11 +39,11 @@ export var initialGameState: App.GameState = {
     '10': -750,
     '20': -750,
   },
-  pendingDecision: null,
+  pendingDecisions: {},
 
   intents: {
-    '10': { target: null, action: null },
-    '20': { target: '10', action: 'move' },
+    '10': { type: 'passive' },
+    '20': { type: 'target', target: '10', action: 'move' },
   },
 
   meta: {
@@ -57,7 +57,7 @@ export function gameStep (game: App.GameState) {
   //
   // Pause when a player needs to make a decision
   //
-  if ( isPendingBattleDecision(game) ) {
+  if ( hasPendingBattleDecision(game) ) {
     return game
   }
 
@@ -65,7 +65,10 @@ export function gameStep (game: App.GameState) {
     var pos = game.timeline[id]
 
     var unit = game.units[id]
-    if ( ! unit ) continue
+    if ( ! unit ) {
+      console.warn('[timeline] No such unit:', id)
+      continue
+    }
 
     var wasWaiting = pos < 0
       , newPos = pos + unit.stats.resilience/10
@@ -74,15 +77,7 @@ export function gameStep (game: App.GameState) {
     game.timeline[id] = newPos
 
     if ( wasWaiting && noLongerWaiting ) {
-
-      if ( isPendingBattleDecision(game) ) {
-        // Out of luck; someone else *just* got a decision
-        game.timeline[id] = newPos - 1
-      }
-      else {
-        game.timeline[id] = 0
-        game.pendingDecision = { unitId: id, action: null }
-      }
+      game.pendingDecisions[id] = { action: null }
     }
   }
 
@@ -91,14 +86,14 @@ export function gameStep (game: App.GameState) {
 
     var unit = game.units[id]
     if ( ! unit ) {
-      console.warn('No such unit:', unit)
+      console.warn('No such unit:', id)
       continue
     }
     if ( intent.type === 'passive' ) continue;
 
     var target = game.units[intent.target]
     if ( ! target ) {
-      console.warn('No such target:', target)
+      console.warn('No such target:', intent.target)
       continue
     }
 
@@ -119,7 +114,7 @@ export function gameStep (game: App.GameState) {
 
 
 export function applyAction (game: App.GameState, action: string, args: any[]) {
-  if ( isPendingBattleDecision(game) ) {
+  if ( hasPendingBattleDecision(game) ) {
     return handleBattleDecision(game, action, args)
   }
   else {
@@ -134,6 +129,8 @@ function handleBattleDecision(game: App.GameState, action: string, args: any[]) 
 }
 
 
-function isPendingBattleDecision (game: App.GameState) {
-  return game.pendingDecision && game.pendingDecision.action === null
+function hasPendingBattleDecision (game: App.GameState) {
+  return Object.keys(game.pendingDecisions)
+    .filter( id => game.pendingDecisions[id].action === null )
+    .length > 0
 }

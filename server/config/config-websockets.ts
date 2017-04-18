@@ -38,7 +38,7 @@ var x=0;
 var stateStream = multicast(
   most.generate(gameLoop, 33)
     .skipRepeats()
-    .tap( _ => console.log("STEP", x++, state.timeline) )
+    .tap( _ => console.log("STEP", x++, state.timeline, state.pendingDecisions) )
 )
 
 

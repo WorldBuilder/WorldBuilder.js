@@ -40,6 +40,15 @@ body {
   position: absolute;
   text-align: center;
 }
+.map > .unit .bar-max {
+  background: #a00;
+  height: 3px;
+  position: absolute; top: -7px;
+}
+.map > .unit .bar {
+  background: #0a0;
+  height: 3px;
+}
 
 
 /**
