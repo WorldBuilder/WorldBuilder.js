@@ -13,7 +13,7 @@ export var initialGameState: App.GameState = {
       id: '10',
       type: 'player',
       name: 'Alice',
-      size: 10,
+      size: 25,
       currentHp: 20,
       maxHp: 20,
       pos: { x: 100, y: 100 },
@@ -21,6 +21,7 @@ export var initialGameState: App.GameState = {
         resilience: 50,
         speed: 10,
         str: 10,
+        range: 5,
       }
     },
     '20': {
@@ -28,14 +29,15 @@ export var initialGameState: App.GameState = {
       type: 'enemy',
       id: '20',
       name: 'Goblin',
-      size: 8,
+      size: 20,
       currentHp: 14,
       maxHp: 20,
       pos: { x: 300, y: 200 },
       stats: {
         resilience: 50,
-        speed: 12,
+        speed: 20,
         str: 10,
+        range: 5,
       }
     }
   },
@@ -47,7 +49,7 @@ export var initialGameState: App.GameState = {
 
   intents: {
     '10': { type: 'passive' },
-    '20': { type: 'target', target: '10', action: 'move' },
+    '20': { type: 'target', target: '10', action: 'attack' },
   },
 
   inputs: {},
@@ -131,14 +133,26 @@ export function gameStep (game: App.GameState): App.Step {
     }
 
 
-    if ( intent.action === 'move' ) {
+    if ( intent.action === 'attack' ) {
       let dir = { x: target.pos.x - unit.pos.x, y: target.pos.y - unit.pos.y }
-      let hyp = Math.sqrt(dir.x*dir.x + dir.y*dir.y)
-      dir.x /= hyp
-      dir.y /= hyp
+      let distance = Math.sqrt(dir.x*dir.x + dir.y*dir.y)
 
-      unit.pos.x += dir.x * unit.stats.speed / 10
-      unit.pos.y += dir.y * unit.stats.speed / 10
+      if ( distance <= (target.size + unit.size + unit.stats.range) ) {
+        // Target is within range of attack
+        var damage = unit.stats.str + Math.round( Math.random() * unit.stats.str * 0.25 )
+        target.currentHp = Math.max(target.currentHp - damage, 0)
+
+        effects.push({ type: 'battle:hp', actorId: unit.id, targetId: target.id, mod: 0-damage })
+        game.intents[unit.id] = { type: 'passive' }
+      }
+      else {
+        // Move towards target
+        dir.x /= distance
+        dir.y /= distance
+
+        unit.pos.x += dir.x * unit.stats.speed / 10
+        unit.pos.y += dir.y * unit.stats.speed / 10
+      }
     }
   }
 

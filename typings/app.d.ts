@@ -13,6 +13,7 @@ declare namespace App {
       resilience: number,
       speed: number,
       str: number,
+      range: number,
     }
   }
 
@@ -75,8 +76,14 @@ declare namespace App {
     | {
         type: 'battle:decision',
         actorId: UnitId,
-        target?: UnitId,
+        targetId?: UnitId,
         action: 'attack'
+      }
+    | {
+        type: 'battle:hp',
+        actorId: UnitId,
+        targetId: UnitId,
+        mod: number, // negative for damage, positive for heal, zero for miss.
       }
 
   export type Step = { game: GameState, effects: Effect[] }

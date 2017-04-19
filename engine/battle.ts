@@ -20,7 +20,7 @@ export function handleDecision(game: App.GameState, actorId: string, args: any[]
     game.intents[actorId] = { type: 'target', target: target.id, action: 'attack' }
     delete game.pendingDecisions[actorId]
 
-    return [{ type: 'battle:decision', actorId: actorId, target: target.id, action: 'attack' }]
+    return [{ type: 'battle:decision', actorId: actorId, targetId: target.id, action: 'attack' }]
   }
 
   return []

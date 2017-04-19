@@ -29,13 +29,13 @@ export default {
 
 function renderUnit (game: App.GameState, unit: App.Unit) {
   var pos = unit.pos
-  var unitSize = unit.size*5 // Scale for visibility
+  var unitSize = unit.size * 2 // unit.size is radius
 
   var style = {
     transform: `translate(${ pos.x }px, ${ pos.y }px)`,
     width: unitSize + 'px',
     height: unitSize + 'px',
-    lineHeight: unit.size*5 + 'px',
+    lineHeight: unitSize + 'px',
   }
 
   var hp = {
