@@ -15,10 +15,29 @@ export default function configWebsockets (server: Server) {
 
   io.on('connection', socket => {
     console.log("a user connected")
-    socket.emit('gs', Game.state)
+    socket.emit('gs', { game: Game.state, effects: [] })
 
+    //
+    // Attach player to connected user
+    //
+    // TODO: Calculate based on auth
+    var userPlayer = Game.state.units['10']
+    socket.emit('userPlayer', userPlayer)
+
+
+    //
+    // Register input by connected user.
+    // The input will be properly handled on the next game loop iteration.
+    //
+    socket.on('user-input', (action: string, args: any[]) => {
+      GameEngine.registerUserInput(Game.state, userPlayer.id, action, args)
+    })
+
+    //
+    // Subscribe socket to streaming game state updates
+    //
     var sub = stateStream.subscribe({
-      next: (state) => socket.emit('gs', state),
+      next: (step) => socket.emit('gs', step),
       complete: () => socket.disconnect(),
       error: (err) => {
         console.log("Error:", err)
@@ -35,19 +54,25 @@ export default function configWebsockets (server: Server) {
 }
 
 
-var x=0;
+
+interface GameStep {
+  state: App.GameState,
+  effects: App.Effect[],
+}
+
 var stateStream = multicast(
-  most.generate(gameLoop, 33)
-    .skipRepeats()
-    .tap( _ => console.log("STEP", x++, Game.state.timeline, Game.state.pendingDecisions) )
+  most.generate<App.Step>(gameLoop, 33)
+    .skipRepeatsWith( (a,b) => a.game.frame === b.game.frame && b.effects.length === 0 )
+    .tap( ({ game }) => console.log("Frame", game.frame, game.timeline, game.pendingDecisions) )
 )
 
 
 function * gameLoop (frame: number) {
 
   while (true) {
-    Game.state = GameEngine.gameStep(Game.state)
-    yield delayPromise(frame, Game.state)
+    let step = GameEngine.gameStep(Game.state)
+    Game.state = step.game
+    yield delayPromise(frame, step)
   }
 }
 

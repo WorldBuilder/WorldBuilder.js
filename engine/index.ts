@@ -2,6 +2,7 @@ import * as Battle from './battle'
 
 
 export var initialGameState: App.GameState = {
+  frame: 0,
   mode: 'battle',
   map: {
     width: 600,
@@ -49,6 +50,8 @@ export var initialGameState: App.GameState = {
     '20': { type: 'target', target: '10', action: 'move' },
   },
 
+  inputs: {},
+
   meta: {
     timelineWaitSize: 1000,
   },
@@ -57,25 +60,47 @@ export var initialGameState: App.GameState = {
 
 var idCounter = 1
 
-export function gameStep (game: App.GameState) {
+export function gameStep (game: App.GameState): App.Step {
+  var effects: App.Effect[] = []
+  //
+  // Handle user input, which may resolve pending decisions
+  //
+  for ( let id in game.inputs ) {
+    let input = game.inputs[id]
+    let pd = game.pendingDecisions[id]
+
+    //
+    // When resolving pending decisions,
+    // the first arg is the target decision to resolve.
+    // This ensures a spam click or slow connection doesn't
+    // accidently make the player decide multiple things.
+    //
+    if ( game.mode === 'battle' && pd && pd.id === input.args[0] ) {
+      var battleEffects = Battle.handleDecision(game, id, input.args.slice(1))
+      effects = effects.concat(battleEffects)
+    }
+  }
 
   //
   // Pause when a player needs to make a decision
   //
   if ( hasPendingBattleDecision(game) ) {
-    return game
+    return { game, effects }
   }
 
+  //
+  // Handle timeline ticks
+  //
   for ( let id in game.timeline ) {
-    var pos = game.timeline[id]
+    let pos = game.timeline[id]
 
-    var unit = game.units[id]
+    let unit = game.units[id]
     if ( ! unit ) {
       console.warn('[timeline] No such unit:', id)
       continue
     }
 
-    var wasWaiting = pos < 0
+    let wasWaiting = pos < 0
       , newPos = pos + unit.stats.resilience/10
       , noLongerWaiting = newPos >= 0
 
@@ -86,17 +111,20 @@ export function gameStep (game: App.GameState) {
     }
   }
 
+  //
+  // Handle active intents
+  //
   for ( let id in game.intents ) {
-    var intent = game.intents[id]
+    let intent = game.intents[id]
 
-    var unit = game.units[id]
+    let unit = game.units[id]
     if ( ! unit ) {
       console.warn('No such unit:', id)
       continue
     }
     if ( intent.type === 'passive' ) continue;
 
-    var target = game.units[intent.target]
+    let target = game.units[intent.target]
     if ( ! target ) {
       console.warn('No such target:', intent.target)
       continue
@@ -104,8 +132,8 @@ export function gameStep (game: App.GameState) {
 
 
     if ( intent.action === 'move' ) {
-      var dir = { x: target.pos.x - unit.pos.x, y: target.pos.y - unit.pos.y }
-      var hyp = Math.sqrt(dir.x*dir.x + dir.y*dir.y)
+      let dir = { x: target.pos.x - unit.pos.x, y: target.pos.y - unit.pos.y }
+      let hyp = Math.sqrt(dir.x*dir.x + dir.y*dir.y)
       dir.x /= hyp
       dir.y /= hyp
 
@@ -115,20 +143,15 @@ export function gameStep (game: App.GameState) {
   }
 
   //
-  // Return shallow copy to bypass duplicate checks
+  // Return shallow copy where copy is one frame higher than the old.
   //
-  return { ...game }
+  return { game: { ...game, frame: game.frame+1 }, effects: effects }
 }
 
 
-export function applyAction (game: App.GameState, actorId: string, action: string, args: any[]) {
-
-  if ( game.mode === 'battle' && game.pendingDecisions[actorId] ) {
-    return Battle.handleDecision(game, actorId, action, args)
-  }
-  else {
-    return game
-  }
+export function registerUserInput (game: App.GameState, actorId: string, action: string, args: any[]) {
+  game.inputs[actorId] = { action, args }
+  console.log("Registering user input by", actorId, { action, args })
 }
 
 function hasPendingBattleDecision (game: App.GameState) {

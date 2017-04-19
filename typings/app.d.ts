@@ -19,11 +19,12 @@ declare namespace App {
 
   export type Unit = Player | Enemy
   export type Player = { type: 'player' } & UnitBase
-  export type Enemy  = { type: 'enemy', aiType: string } & UnitBase
+  export type Enemy  = { type: 'enemy', aiType: null | string } & UnitBase
 
   type TimelinePos = number // neg is wait time, 0 is decision time, pos is act time
   type Timeline = Record<UnitId, TimelinePos>
 
+  type UserInput = { action: string, args: any[] }
 
   type ActionState
     = {
@@ -41,6 +42,7 @@ declare namespace App {
   }
 
   export interface GameState {
+    frame: number,
     mode: 'battle' | 'explore'
     map: {
       width: number,
@@ -58,8 +60,24 @@ declare namespace App {
 
     intents: Record<UnitId, ActionState>
 
+    inputs: Record<UnitId, UserInput>,
+
     meta: {
       timelineWaitSize: number,
     }
   }
+
+  export type Effect
+    = {
+        type: 'invalid-action',
+        message: string,
+      }
+    | {
+        type: 'battle:decision',
+        actorId: UnitId,
+        target?: UnitId,
+        action: 'attack'
+      }
+
+  export type Step = { game: GameState, effects: Effect[] }
 }

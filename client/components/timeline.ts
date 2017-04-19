@@ -14,11 +14,9 @@ interface State {
 
 export default {
   oncreate(vnode) {
-    console.log("Width", vnode.dom.clientWidth)
     vnode.state.width = vnode.dom.clientWidth - padding*2
   },
   view(vnode) {
-    console.log("Width", vnode.state.width)
     var game = vnode.attrs.game
 
     return m('.timeline',

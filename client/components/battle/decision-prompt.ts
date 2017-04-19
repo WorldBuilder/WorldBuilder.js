@@ -12,14 +12,14 @@ interface Attrs {
 
 interface State {
   action: null | string,
-  validTargets: null | Array<string>,
+  validTargets: Array<string>,
 }
 
 
 export default {
   oninit(vnode) {
     vnode.state.action = null
-    vnode.state.validTargets = null
+    vnode.state.validTargets = []
   },
   view(vnode) {
     return m('.decision-prompt',
@@ -50,13 +50,11 @@ function renderPrompt ({ state, attrs }: HelperParams) {
 
     state.action &&
     m('ul.targets',
-      state.validTargets && state.validTargets.length === 0
+      state.validTargets.length === 0
         ? m('h4', "No valid targets.")
-        : state.validTargets
-        ? state.validTargets.map( id =>
+        : state.validTargets.map( id =>
             m('li', { onclick: ()=> executeAction(state, attrs, [id]) }, `${ state.action }: ${Game.get(id).name}`)
           )
-        : null
     )
   )
 }
@@ -67,9 +65,9 @@ function selectAction(state: State, attrs: Attrs, action: string, args: any[]) {
   state.validTargets =
       action === 'attack'
     ? Battle.getValidTargets(attrs.game, attrs.unitId, action, args)
-    : null
+    : []
 }
 
 function executeAction(state: State, attrs: Attrs, args: any[]) {
-  console.log("Executing", state.action, args)
+  Game.act('decide', [attrs.pd.id, state.action, ...args])
 }
