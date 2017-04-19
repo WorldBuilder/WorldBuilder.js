@@ -1,7 +1,5 @@
 import * as m from 'mithril'
 
-var padding = 50
-var actionWidth = 150
 
 interface Attrs {
   game: App.GameState

@@ -5,6 +5,7 @@ import * as most from 'most'
 import multicast from '@most/multicast'
 import DeepDiff = require('deep-diff')
 
+import Game from '../models/game'
 import * as GameEngine from '../../engine'
 
 
@@ -14,7 +15,7 @@ export default function configWebsockets (server: Server) {
 
   io.on('connection', socket => {
     console.log("a user connected")
-    socket.emit('gs', state)
+    socket.emit('gs', Game.state)
 
     var sub = stateStream.subscribe({
       next: (state) => socket.emit('gs', state),
@@ -38,17 +39,15 @@ var x=0;
 var stateStream = multicast(
   most.generate(gameLoop, 33)
     .skipRepeats()
-    .tap( _ => console.log("STEP", x++, state.timeline, state.pendingDecisions) )
+    .tap( _ => console.log("STEP", x++, Game.state.timeline, Game.state.pendingDecisions) )
 )
 
-
-var state = GameEngine.initialGameState
 
 function * gameLoop (frame: number) {
 
   while (true) {
-    state = GameEngine.gameStep(state)
-    yield delayPromise(frame, state)
+    Game.state = GameEngine.gameStep(Game.state)
+    yield delayPromise(frame, Game.state)
   }
 }
 
@@ -56,5 +55,5 @@ function * gameLoop (frame: number) {
 function delayPromise<T>(ms: number, value: T) {
   return new Promise<T>(resolve => {
     setTimeout(() => resolve(value), ms)
-  });
+  })
 }

@@ -1,24 +1,21 @@
-import * as io from 'socket.io-client'
 import * as m from 'mithril'
+
+import Game from './models/game'
 
 import Map from './components/map'
 import Timeline from './components/timeline'
+import PendingDecisions from './components/pending-decisions'
 
-var socket = io()
-
-var gameState: App.GameState | null = null
-
-socket.on('gs', (state: App.GameState) => {
-  gameState = state
-  m.redraw()
-})
 
 function drawGame () {
-  if ( ! gameState ) return m('#ui', m('.loading', "Loading..."))
+  var gs = Game.state
+  if ( ! gs ) return m('#ui', m('.loading', "Loading..."))
   return m('#ui',
-    m('.sidebar'),
-    m('.main', m(Map, { game: gameState })),
-    m(Timeline, { game: gameState })
+    m('.sidebar',
+      m(PendingDecisions, { game: gs, userPlayer: Game.userPlayer })
+    ),
+    m('.main', m(Map, { game: gs })),
+    m(Timeline, { game: gs })
   )
 }
 

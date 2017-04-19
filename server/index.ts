@@ -4,6 +4,9 @@ import { createServer } from 'http'
 var app = express()
 var server = createServer(app)
 
+//
+// Pipework
+//
 require('./config/config-assets').default(app)
 require('./config/config-websockets').default(server)
 

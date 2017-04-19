@@ -1,5 +1,8 @@
+import * as Battle from './battle'
+
 
 export var initialGameState: App.GameState = {
+  mode: 'battle',
   map: {
     width: 600,
     height: 400,
@@ -52,6 +55,8 @@ export var initialGameState: App.GameState = {
 }
 
 
+var idCounter = 1
+
 export function gameStep (game: App.GameState) {
 
   //
@@ -77,7 +82,7 @@ export function gameStep (game: App.GameState) {
     game.timeline[id] = newPos
 
     if ( wasWaiting && noLongerWaiting ) {
-      game.pendingDecisions[id] = { action: null }
+      game.pendingDecisions[id] = { id: String(idCounter++), action: null }
     }
   }
 
@@ -109,25 +114,22 @@ export function gameStep (game: App.GameState) {
     }
   }
 
+  //
+  // Return shallow copy to bypass duplicate checks
+  //
   return { ...game }
 }
 
 
-export function applyAction (game: App.GameState, action: string, args: any[]) {
-  if ( hasPendingBattleDecision(game) ) {
-    return handleBattleDecision(game, action, args)
+export function applyAction (game: App.GameState, actorId: string, action: string, args: any[]) {
+
+  if ( game.mode === 'battle' && game.pendingDecisions[actorId] ) {
+    return Battle.handleDecision(game, actorId, action, args)
   }
   else {
     return game
   }
 }
-
-
-
-function handleBattleDecision(game: App.GameState, action: string, args: any[]) {
-  ;
-}
-
 
 function hasPendingBattleDecision (game: App.GameState) {
   return Object.keys(game.pendingDecisions)
