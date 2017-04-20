@@ -11,7 +11,7 @@ interface Attrs {
 }
 
 interface State {
-  action: null | string,
+  action: null | Battle.ActionWithType,
   validTargets: Array<string>,
 }
 
@@ -41,33 +41,41 @@ function renderStatus ({ state, attrs }: HelperParams) {
 }
 
 function renderPrompt ({ state, attrs }: HelperParams) {
+  var unit = Game.get( attrs.unitId )
+
   return m('.decision.prompt',
-    m('h3', "Decide your decision:"),
-    m('button', { onclick: ()=> selectAction(state, attrs, 'attack', []) }, "Attack"),
-    m('button', { onclick: ()=> selectAction(state, attrs, 'defend', []) }, "Defend"),
-    m('button', { onclick: ()=> selectAction(state, attrs, 'evade',  []) }, "Evade"),
+
+    Game.userPlayer && unit.id === Game.userPlayer.id
+      ? m('h3', "Decide your decision:")
+      : m('h3', `${unit.name}'s Move:`)
+    ,
+
+    m('button', { onclick: ()=> selectAction(state, attrs, { type: 'attack' }) }, "Attack"),
+    m('button', { onclick: ()=> selectAction(state, attrs, { type: 'defend' }) }, "Defend"),
+    m('button', { onclick: ()=> selectAction(state, attrs, { type: 'evade'  }) }, "Evade"),
 
 
     state.action &&
     m('ul.targets',
       state.validTargets.length === 0
         ? m('h4', "No valid targets.")
-        : state.validTargets.map( id =>
-            m('li', { onclick: ()=> executeAction(state, attrs, [id]) }, `${ state.action }: ${Game.get(id).name}`)
+        : state.validTargets.map( targetId =>
+            m('li', {
+              onclick: ()=> Game.act(unit.id, {
+                type: 'decision',
+                pendingDecisionId: attrs.pd.id,
+                action: { type: 'attack', targetId: targetId }
+              })
+            }, `${ state.action!.type }: ${Game.get(targetId).name}`)
           )
     )
   )
 }
 
-
-function selectAction(state: State, attrs: Attrs, action: string, args: any[]) {
+function selectAction(state: State, attrs: Attrs, action: Battle.ActionWithType) {
   state.action = action
   state.validTargets =
-      action === 'attack'
-    ? Battle.getValidTargets(attrs.game, attrs.unitId, action, args)
+      action.type === 'attack'
+    ? Battle.getValidTargets(attrs.game, attrs.unitId, action)
     : []
-}
-
-function executeAction(state: State, attrs: Attrs, args: any[]) {
-  Game.act('decide', [attrs.pd.id, state.action, ...args])
 }

@@ -72,13 +72,22 @@ export function gameStep (game: App.GameState): App.Step {
     let pd = game.pendingDecisions[id]
 
     //
+    // Inputs only last a single frame
+    //
+    delete game.inputs[id]
+
+    //
     // When resolving pending decisions,
     // the first arg is the target decision to resolve.
     // This ensures a spam click or slow connection doesn't
     // accidently make the player decide multiple things.
     //
-    if ( game.mode === 'battle' && pd && pd.id === input.args[0] ) {
-      var battleEffects = Battle.handleDecision(game, id, input.args.slice(1))
+    if (
+      game.mode === 'battle'
+      && input.type === 'decision'
+      && pd && pd.id === input.pendingDecisionId
+    ) {
+      var battleEffects = Battle.handleAction(game, id, input.action)
       effects = effects.concat(battleEffects)
     }
   }
@@ -163,9 +172,9 @@ export function gameStep (game: App.GameState): App.Step {
 }
 
 
-export function registerUserInput (game: App.GameState, actorId: string, action: string, args: any[]) {
-  game.inputs[actorId] = { action, args }
-  console.log("Registering user input by", actorId, { action, args })
+export function registerUserInput (game: App.GameState, actorId: string, input: App.UserInput) {
+  game.inputs[actorId] = input
+  console.log("Registering user input by", actorId, input)
 }
 
 function hasPendingBattleDecision (game: App.GameState) {

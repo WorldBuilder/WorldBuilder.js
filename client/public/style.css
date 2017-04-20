@@ -73,7 +73,7 @@ body {
 
 .timeline > .unit {
   position: absolute; left: 0; top: 50%;
-  transition: all 0.5s;
+  transition: all 0.1s;
 }
 .timeline > .unit span.marker::after {
   content: '╿';

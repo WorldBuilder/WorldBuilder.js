@@ -6,6 +6,7 @@ var state: App.GameState;
 
 var gameState: App.GameState | null = null
 var userPlayer: App.Player | null = null
+var isDM = false
 
 
 //
@@ -25,6 +26,10 @@ socket.on('userPlayer', (player: App.Player) => {
   m.redraw()
 })
 
+socket.on('dm', () => {
+  isDM = true
+})
+
 //
 // Return one single object for convenience
 //
@@ -35,14 +40,17 @@ var api = {
   get userPlayer () {
     return userPlayer
   },
+  get isDM () {
+    return isDM
+  },
   get (id: string) {
     return state.units[id]
   },
   update (game: App.GameState) {
     state = game
   },
-  act (action: string, args: any[]) {
-    socket.emit('user-input', action, args)
+  act (actorId: string, input: App.UserInput) {
+    socket.emit('user-input', actorId, input)
   }
 }
 

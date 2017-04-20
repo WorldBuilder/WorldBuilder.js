@@ -21,17 +21,31 @@ export default function configWebsockets (server: Server) {
     // Attach player to connected user
     //
     // TODO: Calculate based on auth
+
+    var isDM = false
     var userPlayer = Game.state.units['10']
     socket.emit('userPlayer', userPlayer)
 
+    // TODO: flag only on correct password event
+    isDM = true
+    socket.emit('dm')
 
     //
     // Register input by connected user.
     // The input will be properly handled on the next game loop iteration.
     //
-    socket.on('user-input', (action: string, args: any[]) => {
-      GameEngine.registerUserInput(Game.state, userPlayer.id, action, args)
+    socket.on('user-input', (actorId: string, input: App.UserInput) => {
+      if ( ! userPlayer && ! isDM ) return;
+
+      if ( userPlayer && actorId !== userPlayer.id && ! isDM ) {
+        //
+        // Non-DMs can only control their own player unit.
+        //
+        actorId = userPlayer.id
+      }
+      GameEngine.registerUserInput(Game.state, actorId, input)
     })
+
 
     //
     // Subscribe socket to streaming game state updates

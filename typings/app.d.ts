@@ -25,7 +25,12 @@ declare namespace App {
   type TimelinePos = number // neg is wait time, 0 is decision time, pos is act time
   type Timeline = Record<UnitId, TimelinePos>
 
-  type UserInput = { action: string, args: any[] }
+  export type UserInput
+    = { type: 'decision', pendingDecisionId: string, action: BattleAction }
+
+  export type BattleAction
+    = { type: 'attack', targetId: UnitId }
+
 
   type ActionState
     = {
