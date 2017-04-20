@@ -1,3 +1,6 @@
+:root {
+  --focused-color: hsla(202, 74%, 50%, 1);
+}
 
 body {
   margin: 0;
@@ -40,10 +43,14 @@ body {
 }
 .map > .unit {
   background: #ccc;
+  border: 2px solid transparent;
   border-radius: 9999px;
   position: absolute;
   text-align: center;
 }
+  .map > .unit.focused {
+    border-color: var(--focused-color);
+  }
 .map > .unit .bar-max {
   background: #a00;
   height: 3px;
@@ -94,8 +101,12 @@ body {
  */
 .unit-stats {
   background: #F4F4F4;
-  margin: 1rem;
+  border: 2px solid #ccc;
+  margin: 0.9rem;
   padding: 1rem;
+}
+.unit-stats.focused {
+  border-color: var(--focused-color);
 }
 .unit-stats h3 {
   margin: 0 0 0.25rem;

@@ -33,16 +33,12 @@ socket.on('dm', () => {
 //
 // Return one single object for convenience
 //
-var api = {
-  get state () {
-    return state
-  },
-  get userPlayer () {
-    return userPlayer
-  },
-  get isDM () {
-    return isDM
-  },
+export default {
+  get state () { return state },
+  get userPlayer () { return userPlayer },
+  get isDM () { return isDM },
+
+
   get (id: string) {
     return state.units[id]
   },
@@ -51,7 +47,33 @@ var api = {
   },
   act (actorId: string, input: App.UserInput) {
     socket.emit('user-input', actorId, input)
+  },
+
+  //
+  // UI Helpers
+  //
+  focus (unitId: App.UnitId, obj?: any) {
+    obj = obj || {}
+    obj['data-id'] = unitId
+    obj.onmouseenter = onmouseenter
+    obj.onmouseleave = onmouseleave
+
+    var className = obj.class || ''
+    obj.class = (selectedUnitId === unitId) ? `${className} focused` : className
+    return obj
   }
 }
 
-export default api
+//
+// UI helpers
+//
+var selectedUnitId: null | App.UnitId = null
+
+function onmouseenter (e: any) {
+  selectedUnitId = e.target.dataset.id
+}
+function onmouseleave (e: any) {
+  if ( selectedUnitId === e.target.dataset.id ) {
+    selectedUnitId = null
+  }
+}
