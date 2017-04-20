@@ -14,8 +14,8 @@ export var initialGameState: App.GameState = {
       type: 'player',
       name: 'Alice',
       size: 25,
-      currentHp: 20,
-      maxHp: 20,
+      currentHp: 30,
+      maxHp: 30,
       pos: { x: 100, y: 100 },
       stats: {
         resilience: 50,

@@ -4,6 +4,10 @@ body {
   padding: 0;
 }
 
+*:last-child {
+  margin-bottom: 0;
+}
+
 #ui {
   height: 100vh;
   display: grid;
@@ -88,13 +92,30 @@ body {
 /**
  * Pending Decisions
  */
-.pending-decisions .decision {
+.unit-stats {
   background: #F4F4F4;
   margin: 1rem;
   padding: 1rem;
 }
-.pending-decisions .decision h3 {
-  margin: 0 0 1rem;
+.unit-stats h3 {
+  margin: 0 0 0.25rem;
+}
+
+.unit-stats .stat {
+  display: flex;
+}
+.unit-stats .stat label {
+  text-transform: uppercase;
+}
+.unit-stats .stat .value {
+  flex: 1;
+  text-align: right;
+}
+
+.unit-stats .decision {
+  border: 1px solid #ccc;
+  margin-top: 1rem;
+  padding: 1rem;
 }
 
 .decision-prompt ul.targets {

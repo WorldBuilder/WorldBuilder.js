@@ -4,7 +4,7 @@ import Game from './models/game'
 
 import Map from './components/map'
 import Timeline from './components/timeline'
-import PendingDecisions from './components/pending-decisions'
+import UnitStats from './components/unit-stats'
 
 
 function drawGame () {
@@ -12,7 +12,7 @@ function drawGame () {
   if ( ! gs ) return m('#ui', m('.loading', "Loading..."))
   return m('#ui',
     m('.sidebar',
-      m(PendingDecisions, { game: gs, userPlayer: Game.userPlayer })
+      m(UnitStats, { game: gs, userPlayer: Game.userPlayer })
     ),
     m('.main', m(Map, { game: gs })),
     m(Timeline, { game: gs })

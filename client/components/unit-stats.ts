@@ -16,17 +16,28 @@ export default {
     var game = vnode.attrs.game
     var uPlayer = vnode.attrs.userPlayer
 
-    return m('.pending-decisions',
+    return m('.unit-stats-component',
 
-      Object.keys(game.pendingDecisions).map( unitId => {
+      Object.keys(game.units).map( unitId => {
         var pd = game.pendingDecisions[unitId]
         var unit = game.units[unitId]
 
         var shouldPrompt = uPlayer && uPlayer.id === unitId
                         || Game.isDM && unit.type !== 'player'
 
-        return m(DecisionPrompt, { game, unitId, pd, prompt: !!shouldPrompt })
+        return m('.unit-stats', [
+          renderStats(unit),
+          pd && m(DecisionPrompt, { game, unitId, pd, prompt: !!shouldPrompt }),
+        ])
       })
     )
   }
 } as m.Component<Attrs, State>
+
+
+function renderStats (unit: App.Unit) {
+  return m('.stats',
+    m('h3', unit.name),
+    m('.stat', m('label', 'hp'), m('.value', `${unit.currentHp}/${unit.maxHp}`))
+  )
+}
