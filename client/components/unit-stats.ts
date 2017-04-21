@@ -37,7 +37,7 @@ export default {
 
 function renderStats (unit: App.Unit) {
   return m('.stats',
-    m('h3', unit.name),
+    m('h3', unit.name, m('small.debug', ` (${Math.round(unit.pos.x)},${Math.round(unit.pos.y)})`)),
     m('.stat', m('label', 'hp'), m('.value', `${unit.currentHp}/${unit.maxHp}`))
   )
 }

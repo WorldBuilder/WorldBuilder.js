@@ -47,7 +47,7 @@ export var initialGameState: App.GameState = {
   },
   retreatPoints: {
     '10': { x: 100, y: 200 },
-    '20': { x: 200, y: 150 },
+    '20': { x: 300, y: 150 },
   },
 
   pendingDecisions: {},
@@ -135,6 +135,7 @@ export function gameStep (game: App.GameState): App.Step {
       if ( pos.step >= pos.limit ) {
         // TODO: Set back differently based on action
         game.timeline[id] = { type: 'wait', value: game.meta.timelineWaitSize }
+        game.intents[id] = { type: 'passive' }
       }
     }
   }
@@ -152,33 +153,54 @@ export function gameStep (game: App.GameState): App.Step {
     }
     if ( intent.type === 'passive' ) continue;
 
-    let target = game.units[intent.target]
-    if ( ! target ) {
-      console.warn('No such target:', intent.target)
-      continue
+
+    if ( intent.type === 'target' ) {
+
+      let target = game.units[intent.target]
+      if ( ! target ) {
+        console.warn('No such target:', intent.target)
+        continue
+      }
+
+
+      if ( intent.action === 'attack' ) {
+        let dir = { x: target.pos.x - unit.pos.x, y: target.pos.y - unit.pos.y }
+        let distance = Math.sqrt(dir.x*dir.x + dir.y*dir.y)
+
+        if ( distance <= (target.size + unit.size + unit.stats.range) ) {
+          // Target is within range of attack
+          var damage = unit.stats.str + Math.round( Math.random() * unit.stats.str * 0.25 )
+          target.currentHp = Math.max(target.currentHp - damage, 0)
+
+          effects.push({ type: 'battle:hp', actorId: unit.id, targetId: target.id, mod: 0-damage })
+
+          game.intents[unit.id] = { type: 'retreat', pos: game.retreatPoints[unit.id] }
+        }
+        else {
+          // Move towards target
+          dir.x /= distance
+          dir.y /= distance
+
+          unit.pos.x += dir.x * unit.stats.speed / 10
+          unit.pos.y += dir.y * unit.stats.speed / 10
+        }
+      }
+
     }
+    else if ( intent.type === 'retreat' ) {
 
-
-    if ( intent.action === 'attack' ) {
-      let dir = { x: target.pos.x - unit.pos.x, y: target.pos.y - unit.pos.y }
+      // Move towards point
+      let dir = { x: intent.pos.x - unit.pos.x, y: intent.pos.y - unit.pos.y }
       let distance = Math.sqrt(dir.x*dir.x + dir.y*dir.y)
 
-      if ( distance <= (target.size + unit.size + unit.stats.range) ) {
-        // Target is within range of attack
-        var damage = unit.stats.str + Math.round( Math.random() * unit.stats.str * 0.25 )
-        target.currentHp = Math.max(target.currentHp - damage, 0)
-
-        effects.push({ type: 'battle:hp', actorId: unit.id, targetId: target.id, mod: 0-damage })
-        game.intents[unit.id] = { type: 'passive' }
-      }
-      else {
-        // Move towards target
+      if ( distance > 1 ) {
         dir.x /= distance
         dir.y /= distance
 
         unit.pos.x += dir.x * unit.stats.speed / 10
         unit.pos.y += dir.y * unit.stats.speed / 10
       }
+
     }
   }
 

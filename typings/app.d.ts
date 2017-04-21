@@ -50,6 +50,10 @@ declare namespace App {
         target: UnitId,
         action: 'move' | 'attack' | 'cast' | 'defend'
       }
+    | {
+        type: 'retreat',
+        pos: { x: number, y: number }
+      }
 
   export type PendingDecision = {
     id: string, // Useful for mitigating potential slow network issues
@@ -67,6 +71,12 @@ declare namespace App {
 
     // number is where they are on timeline
     timeline: Timeline,
+
+    //
+    // This is the point that units will retreat towards
+    // when they have leftover action points during battle.
+    //
+    retreatPoints: Record<UnitId, { x: number, y: number }>
 
     //
     // During battle, the game pauses as long as there is a decision to be made.
