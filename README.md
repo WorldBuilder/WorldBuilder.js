@@ -6,6 +6,15 @@ WorldBuilder.js is a project intended to provide a multiplayer environment for d
 - **Hackable**. If you know JavaScript, you'll be able to tweak and extend the engine to your liking.
 - **Locally Served**. The source code is freely available to run on your own computer.
 
+## Setup
+
+```bash
+$ git clone https://github.com/gilbert/WorldBuilder.js
+$ cd WorldBuilder.js
+$ npm install
+$ npm start
+```
+
 ## Gameplay
 
 The two main game modes are `explore` and `battle`.
