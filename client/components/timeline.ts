@@ -1,7 +1,7 @@
 import * as m from 'mithril'
 
 var padding = 50
-var actionWidth = 150
+var actWidth = 150
 
 interface Attrs {
   game: App.GameState
@@ -23,11 +23,11 @@ export default {
 
       m('.line.wait', { style: {
         left: padding+'px',
-        right: padding+actionWidth+'px',
+        right: padding+actWidth+'px',
       } }),
 
       m('.line.action', { style: {
-        width: actionWidth+'px',
+        width: actWidth+'px',
         right: padding+'px',
       } }),
 
@@ -37,12 +37,14 @@ export default {
         if ( ! unit ) return;
 
         var max = game.meta.timelineWaitSize
-        var timelineWaitWidth = vnode.state.width - actionWidth
+        var timelineWaitWidth = vnode.state.width - actWidth
 
-        var percentPos = 1 - Math.abs(pos / max)
+        var offset = pos.type === 'wait'
+          ? (1 - pos.value / max) * timelineWaitWidth || 0
+          : timelineWaitWidth + (pos.step / pos.limit * actWidth)
 
         var style = {
-          transform: `translateX(${ (timelineWaitWidth * percentPos || 0) + padding }px)`,
+          transform: `translateX(${ offset + padding }px)`,
           marginTop: (unit.type=='player' ? 5 : -25) + 'px',
         }
 

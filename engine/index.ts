@@ -42,20 +42,26 @@ export var initialGameState: App.GameState = {
     }
   },
   timeline: {
-    '10': -750,
-    '20': -750,
+    '10': { type: 'wait', value: 750 },
+    '20': { type: 'wait', value: 750 },
   },
+  retreatPoints: {
+    '10': { x: 100, y: 200 },
+    '20': { x: 200, y: 150 },
+  },
+
   pendingDecisions: {},
 
   intents: {
     '10': { type: 'passive' },
-    '20': { type: 'target', target: '10', action: 'attack' },
+    '20': { type: 'passive' },
   },
 
   inputs: {},
 
   meta: {
     timelineWaitSize: 1000,
+    fps: 30,
   },
 }
 
@@ -78,9 +84,9 @@ export function gameStep (game: App.GameState): App.Step {
 
     //
     // When resolving pending decisions,
-    // the first arg is the target decision to resolve.
+    // a target decision to resolve is provided (pd.id).
     // This ensures a spam click or slow connection doesn't
-    // accidently make the player decide multiple things.
+    // accidently make the player decide multiple, different things.
     //
     if (
       game.mode === 'battle'
@@ -111,14 +117,25 @@ export function gameStep (game: App.GameState): App.Step {
       continue
     }
 
-    let wasWaiting = pos < 0
-      , newPos = pos + unit.stats.resilience/10
-      , noLongerWaiting = newPos >= 0
+    if ( pos.type === 'wait' ) {
+      let wasWaiting = pos.value > 0
+        , newValue = Math.max(pos.value - unit.stats.resilience/10, 0)
+        , noLongerWaiting = newValue === 0
 
-    game.timeline[id] = newPos
+      game.timeline[id] = { type: 'wait', value: newValue }
 
-    if ( wasWaiting && noLongerWaiting ) {
-      game.pendingDecisions[id] = { id: String(idCounter++), action: null }
+      if ( wasWaiting && noLongerWaiting ) {
+        game.pendingDecisions[id] = { id: String(idCounter++), action: null }
+      }
+    }
+    else if ( pos.type === 'act' ) {
+
+      pos.step += 1
+
+      if ( pos.step >= pos.limit ) {
+        // TODO: Set back differently based on action
+        game.timeline[id] = { type: 'wait', value: game.meta.timelineWaitSize }
+      }
     }
   }
 

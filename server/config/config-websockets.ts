@@ -75,7 +75,7 @@ interface GameStep {
 }
 
 var stateStream = multicast(
-  most.generate<App.Step>(gameLoop, 33)
+  most.generate<App.Step>(gameLoop, 1000 / Game.state.meta.fps)
     .skipRepeatsWith( (a,b) => a.game.frame === b.game.frame && b.effects.length === 0 )
     .tap( ({ game }) => console.log("Frame", game.frame, game.timeline, game.pendingDecisions) )
 )

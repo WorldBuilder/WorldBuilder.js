@@ -20,6 +20,10 @@ export function handleAction(game: App.GameState, actorId: string, action: App.B
     game.intents[actorId] = { type: 'target', target: target.id, action: 'attack' }
     delete game.pendingDecisions[actorId]
 
+    if ( game.mode === 'battle' ) {
+      game.timeline[actorId] = { type: 'act', step: 0, limit: game.meta.fps * 3 }
+    }
+
     return [{ type: 'battle:decision', actorId: actorId, targetId: target.id, action: 'attack' }]
   }
 
