@@ -28,7 +28,6 @@
     "express": "^4.15.2",
     "mithril": "^1.1.1",
     "most": "^1.2.2",
-    "object-observer": "github:gilbert/object-observer-js",
     "rx": "^4.1.0",
     "socket.io": "^1.7.3",
     "socket.io-client": "^1.7.3",
