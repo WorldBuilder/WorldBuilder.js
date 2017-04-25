@@ -8,14 +8,16 @@ import UnitStats from './components/unit-stats'
 
 
 function drawGame () {
-  var gs = Game.state
-  if ( ! gs ) return m('#ui', m('.loading', "Loading..."))
+  var game = Game.state
+  if ( ! game ) return m('#ui', m('.loading', "Loading..."))
   return m('#ui',
     m('.sidebar',
-      m(UnitStats, { game: gs, userPlayer: Game.userPlayer })
+      m(UnitStats, { game })
     ),
-    m('.main', m(Map, { game: gs })),
-    m(Timeline, { game: gs })
+    m('.main',
+      m(Map, { game })
+    ),
+    m(Timeline, { game })
   )
 }
 

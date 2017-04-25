@@ -5,7 +5,6 @@ import Game from '../models/game'
 
 interface Attrs {
   game: App.GameState,
-  userPlayer: null | App.Player,
 }
 
 interface State {}
@@ -14,7 +13,7 @@ interface State {}
 export default {
   view(vnode) {
     var game = vnode.attrs.game
-    var uPlayer = vnode.attrs.userPlayer
+    var uPlayer = Game.userPlayer
 
     return m('.unit-stats-component',
 

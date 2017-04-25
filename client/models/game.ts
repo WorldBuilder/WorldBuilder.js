@@ -49,6 +49,10 @@ export default {
     socket.emit('user-input', actorId, input)
   },
 
+  get units () {
+    return Object.keys(state.units).map( id => state.units[id] )
+  },
+
   //
   // UI Helpers
   //

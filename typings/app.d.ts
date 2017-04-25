@@ -6,7 +6,7 @@ declare namespace App {
     id: UnitId,
     name: string,
     size: number,
-    pos: { x: number, y: number },
+    pos: Coordinate,
     currentHp: number,
     maxHp: number,
     stats: {
@@ -36,6 +36,7 @@ declare namespace App {
 
   export type UserInput
     = { type: 'decision', pendingDecisionId: string, action: BattleAction }
+    | { type: 'set-retreat-point', pos: Coordinate }
 
   export type BattleAction
     = { type: 'attack', targetId: UnitId }
@@ -52,7 +53,7 @@ declare namespace App {
       }
     | {
         type: 'retreat',
-        pos: { x: number, y: number }
+        pos: Coordinate
       }
 
   export type PendingDecision = {
@@ -76,7 +77,7 @@ declare namespace App {
     // This is the point that units will retreat towards
     // when they have leftover action points during battle.
     //
-    retreatPoints: Record<UnitId, { x: number, y: number }>
+    retreatPoints: Record<UnitId, Coordinate>
 
     //
     // During battle, the game pauses as long as there is a decision to be made.
@@ -110,6 +111,16 @@ declare namespace App {
         targetId: UnitId,
         mod: number, // negative for damage, positive for heal, zero for miss.
       }
+    | {
+        type: 'retreat-point',
+        actorId: UnitId,
+        pos: Coordinate,
+      }
 
   export type Step = { game: GameState, effects: Effect[] }
+
+  //
+  // Util
+  //
+  type Coordinate = { x: number, y: number }
 }

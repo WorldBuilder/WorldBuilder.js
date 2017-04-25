@@ -3,7 +3,7 @@ import Game from '../models/game'
 
 
 interface Attrs {
-  game: App.GameState
+  game: App.GameState,
 }
 
 interface State {
@@ -18,11 +18,20 @@ export default {
   view(vnode) {
     var game = vnode.attrs.game
 
-    return m('.map',
+    var style = {
+      height: game.map.height,
+      width: game.map.width,
+    }
 
-      Object.keys(game.units).map( unitId =>
-        game.units[unitId] && renderUnit(game, game.units[unitId])
-      )
+    return m('.map',
+      { style, oncontextmenu: setRetreatPoint },
+
+      m('.scroll-padding-hack'),
+
+      Game.units.map( unit => [
+        renderUnit(game, unit),
+        renderRetreatPath(game, unit),
+      ])
     )
   }
 } as m.Component<Attrs, State>
@@ -50,4 +59,19 @@ function renderUnit (game: App.GameState, unit: App.Unit) {
 
     unit.name[0].toUpperCase()
   )
+}
+
+
+function setRetreatPoint (e: any) {
+  e.preventDefault()
+  var rect    = e.currentTarget.getBoundingClientRect()
+    , offsetX = e.clientX - rect.left
+    , offsetY = e.clientY - rect.top
+
+  if ( Game.userPlayer ) {
+    Game.act(Game.userPlayer.id, {
+      type: 'set-retreat-point',
+      pos: { x: offsetX, y: offsetY },
+    })
+  }
 }

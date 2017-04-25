@@ -5,7 +5,7 @@ export var initialGameState: App.GameState = {
   frame: 0,
   mode: 'battle',
   map: {
-    width: 600,
+    width: 800,
     height: 400,
   },
   units: {
@@ -82,6 +82,8 @@ export function gameStep (game: App.GameState): App.Step {
     //
     delete game.inputs[id]
 
+    // TODO: Move to another file if this gets too big
+
     //
     // When resolving pending decisions,
     // a target decision to resolve is provided (pd.id).
@@ -95,6 +97,11 @@ export function gameStep (game: App.GameState): App.Step {
     ) {
       var battleEffects = Battle.handleAction(game, id, input.action)
       effects = effects.concat(battleEffects)
+    }
+
+    else if ( input.type === 'set-retreat-point' ) {
+      game.retreatPoints[id] = input.pos
+      effects.push({ type: 'retreat-point', actorId: id, pos: input.pos })
     }
   }
 

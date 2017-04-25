@@ -1,5 +1,6 @@
 :root {
   --focused-color: hsla(202, 74%, 50%, 1);
+  --map-padding: 100px;
 }
 
 body {
@@ -37,8 +38,20 @@ body {
 .main {
   grid-area: main;
   overflow: auto;
+  background-image:
+    linear-gradient(45deg, #ccc 25%, transparent 25%),
+    linear-gradient(-45deg, #ccc 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ccc 75%),
+    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-size: 25px 25px;
+  padding: 1px;
+}
+.map .scroll-padding-hack {
+  position: absolute; left: 100%; width: var(--map-padding); height: 1px;
 }
 .map {
+  background: #aaa;
+  margin: var(--map-padding);
   position: relative;
 }
 .map > .unit {
