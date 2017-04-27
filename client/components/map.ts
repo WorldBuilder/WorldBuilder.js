@@ -75,3 +75,9 @@ function setRetreatPoint (e: any) {
     })
   }
 }
+
+
+function renderRetreatPath (game: App.GameState, unit: App.Unit) {
+  // TODO
+  return null
+}
