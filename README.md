@@ -19,7 +19,7 @@ $ npm start
 
 The two main game modes are `explore` and `battle`.
 
-Exploration is done in real time; players click where to move, and their avatars move withoun hesistation.
+Exploration is done in real time; players click where to move, and their avatars move without hesistation.
 
 However, battle is much more interesting. The engine aims to be a 2d version of [Grandia II's legendary battle system](https://www.youtube.com/watch?v=LcZJPRHMuhk).
 
