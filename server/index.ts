@@ -7,7 +7,7 @@ var server = createServer(app)
 //
 // Pipework
 //
-require('./config/config-assets').default(app)
+require('./config/config-web-assets').default(app)
 require('./config/config-websockets').default(server)
 
 console.log("Listening on port 4242")
