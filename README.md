@@ -23,6 +23,26 @@ Exploration is done in real time; players click where to move, and their avatars
 
 However, battle is much more interesting. The engine aims to be a 2d version of [Grandia II's legendary battle system](https://www.youtube.com/watch?v=LcZJPRHMuhk).
 
+## Code Flow
+
+This app is a client/server architecture with syncing game state, so the code can feel unwieldy at first. However, once understood, it's not difficult to navigate around.
+
+Starting from the user's perspective, when making a decision:
+
+- The [DecisionPrompt](./client/components/battle/decision-prompt.ts) component activates
+- User selects action type (attack, skill, etc.)
+  - User selects a skill if needed
+- Game engine displays a list of valid targets based on [getValidTargets](./engine/battle-shared.ts)
+- User selects a target
+- The client-side [game model](./client/models/game.ts) sends a message via a websocket to the server using the `act` function
+- The server receives the message via the [`'user-input'`](./server/config/config-websockets.ts) message
+- After validation, the server passes the message to the [game engine](./engine/index.ts) `registerUserInput` method, which just stores it in the game state
+- Dring the next frame, the [game engine](./engine/index.ts) handles the user input within its `step` function
+  - During a battle, this will pass the user input to the [battle engine's](./engine/battle.ts) handleAction function
+- From here, game state is updated, and changes are distributed across all clients via [websocket + multicast](./server/config/config-websockets.ts).
+- Each client receives an updated game state in the [client-side game model](./client/models/game.ts), which simply stores it and redraws the UI.
+- Loop!
+
 ## Roadmap
 
 WorldBuilder.js is in early stages. However, the road to being minimally viable is not a long one:
