@@ -30,13 +30,16 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
 
 - [x] Server-client data syncing
   - [ ] Optimize data sent over the wire
+- [ ] User Authentication
+  - [ ] Allow DM to specify usernames & passwords in a [TOML](https://github.com/toml-lang/toml) file
 - [x] Render map with existing units
   - [x] Render health bars
   - [ ] Render a DM-defined image as background
   - [ ] Render terrain / walls definitons in map data
   - [ ] Collision detection for terrain / walls
   - [ ] Show animation when setting retreat point
-  - [ ] Draw retreat path line during battle
+  - [ ] Draw intent path for user player
+  - [ ] Draw retreat path for user player during battle
   - [ ] Implement fog of war
 - [x] Battle Timeline Loop
   - [x] Move units down the timeline based on their stats
@@ -45,10 +48,11 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
   - [x] When attacking, move unit towards target and stike when in range
   - [ ] Calculate setback based on battle decision
   - [ ] Implement basic attack animation
-  - [ ] Implement pausing for certain animations (spells, etc.)
+  - [ ] Implement pausing for certain animations (skills, etc.)
 - [x] Foundation for making battle decisions (attack, defend, etc.)
   - [ ] Implement defend
-  - [ ] Implement spell system
+  - [ ] Implement skill system
+  - [ ] Implement "cancel" as a skill effect
 - [ ] Basic Chat System
   - [ ] Allow DM to masquerade as NPCs
   - [ ] Render chat bubbles

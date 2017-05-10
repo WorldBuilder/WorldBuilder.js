@@ -142,13 +142,22 @@ body {
   padding: 1rem;
 }
 
-.decision-prompt ul.targets {
+.decision-prompt ul.options {
   // list-style: none;
   padding: 0 0 0 1.5rem;
 }
-.decision-prompt ul.targets li {
+.decision-prompt ul.options li {
+  border: 2px solid transparent;
   cursor: pointer;
 }
-.decision-prompt ul.targets li:hover {
+.decision-prompt ul.options li.active {
+  border-color: var(--focused-color);
+}
+.decision-prompt ul.options li:hover {
   background: white;
+}
+
+.decision-prompt ul.options + ul.options {
+  border-top: 1px solid #ccc;
+  padding-top: 0.75rem;
 }

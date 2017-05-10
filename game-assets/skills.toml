@@ -1,0 +1,49 @@
+
+[[skill]]
+name = "singe"
+description = """
+  Singe your enemy with a quick magic attack.
+"""
+range = 300
+cost = { mp = 4 }
+time = { pre = 0.25, post = 0 }
+target = { type = "single", valid = "enemy" }
+
+[[skill.effect]]
+type = "damage"
+amount = 2
+scale = { mag = 1 }
+
+
+
+[[skill]]
+name = "fumes"
+description = """
+  Cause blindness in an area of effect.
+"""
+range = 400
+cost = { mp = 4 }
+time = { pre = 0.5, post = 1 }
+target = { type = "radius", size = 50, affects = "all" }
+
+[[skill.effect]]
+type = "blind"
+amount = 0.25
+duration = 10
+
+
+
+[[skill]]
+name = "mend"
+description = """
+  Mend a bit of health of one of your allies.
+"""
+range = 600
+cost = { mp = 4 }
+time = { pre = 0.5, post = 0.5 }
+target = { type = "single", valid = "ally" }
+
+[[skill.effect]]
+type = "heal"
+amount = 5
+scale = { mag = 0.25, wis = 1 }

@@ -1,6 +1,7 @@
 
 declare namespace App {
   export type UnitId = string
+  export type SkillId = string
 
   interface UnitBase {
     id: UnitId,
@@ -9,12 +10,17 @@ declare namespace App {
     pos: Coordinate,
     currentHp: number,
     maxHp: number,
-    stats: {
-      resilience: number,
-      speed: number,
-      str: number,
-      range: number,
-    }
+    stats: UnitStats,
+    skills: SkillId[]
+  }
+
+  interface UnitStats {
+    resilience: number,
+    speed: number,
+    range: number,
+    str: number,
+    mag: number,
+    wis: number,
   }
 
 
@@ -39,7 +45,8 @@ declare namespace App {
     | { type: 'set-retreat-point', pos: Coordinate }
 
   export type BattleAction
-    = { type: 'attack', targetId: UnitId }
+    = { type: 'attack', target: UnitId }
+    | { type: 'skill', skill: SkillId, target: UnitId | { x: number, y: number } }
 
 
   type ActionState
@@ -49,7 +56,7 @@ declare namespace App {
     | {
         type: 'target',
         target: UnitId,
-        action: 'move' | 'attack' | 'cast' | 'defend'
+        action: 'move' | 'attack' | 'skill' | 'defend'
       }
     | {
         type: 'retreat',
@@ -91,6 +98,7 @@ declare namespace App {
     meta: {
       timelineWaitSize: number,
       fps: number,
+      skills: Skill[],
     }
   }
 
@@ -118,6 +126,34 @@ declare namespace App {
       }
 
   export type Step = { game: GameState, effects: Effect[] }
+
+
+  export interface Skill {
+    name: SkillId,
+    range: number,
+    cost: {
+      mp?: number,
+      sp?: number,
+    },
+    time: {
+      pre: number,
+      post: number,
+    },
+    target: SkillTarget,
+    effects: SkillEffect[],
+  }
+
+  export type SingleTarget = { type: 'single', valid: 'ally' | 'enemy' | 'any' }
+  export type RadiusTarget = { type: 'radius', size: number , affects: 'ally' | 'enemy' | 'all' }
+
+  export type SkillTarget = SingleTarget | RadiusTarget
+
+
+  export type SkillEffect
+    = { type: 'damage', amount: number, scale: Record<keyof UnitStats, number> }
+    | { type: 'blind', amount: number, duration: number }
+
+  type DamageType = 'physical' | 'spell'
 
   //
   // Util

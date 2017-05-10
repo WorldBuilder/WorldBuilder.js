@@ -9,13 +9,16 @@ export * from './battle-shared'
 export function handleAction(game: App.GameState, actorId: string, action: App.BattleAction): App.Effect[] {
 
   if ( action.type === 'attack' ) {
-    let target = game.units[ action.targetId ]
+    let target = game.units[ action.target ]
     if ( ! target ) return [];
 
     let validTargets = BattleShared.getValidTargets(game, actorId, action)
-    if ( ! validTargets.includes(target.id) ) {
+
+
+    if ( Array.isArray(validTargets) && ! validTargets.includes(target.id) ) {
       return [{ type: 'invalid-action', message: `Invalid target ${target.name}` }]
     }
+
 
     game.intents[actorId] = { type: 'target', target: target.id, action: 'attack' }
     delete game.pendingDecisions[actorId]
@@ -25,6 +28,10 @@ export function handleAction(game: App.GameState, actorId: string, action: App.B
     }
 
     return [{ type: 'battle:decision', actorId: actorId, targetId: target.id, action: 'attack' }]
+  }
+
+  else if ( action.type === 'skill' ) {
+    console.log("TODO: HANDLE SKILL ACTION")
   }
 
   return []

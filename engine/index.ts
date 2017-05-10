@@ -1,5 +1,8 @@
 import * as Battle from './battle'
+import * as GameAssets from './game-assets'
 
+
+GameAssets.sync()
 
 export var initialGameState: App.GameState = {
   frame: 0,
@@ -17,11 +20,14 @@ export var initialGameState: App.GameState = {
       currentHp: 30,
       maxHp: 30,
       pos: { x: 100, y: 100 },
+      skills: ['singe'],
       stats: {
         resilience: 50,
         speed: 10,
-        str: 10,
         range: 5,
+        str: 10,
+        mag: 5,
+        wis: 1,
       }
     },
     '20': {
@@ -33,11 +39,14 @@ export var initialGameState: App.GameState = {
       currentHp: 14,
       maxHp: 20,
       pos: { x: 300, y: 200 },
+      skills: [],
       stats: {
         resilience: 50,
         speed: 20,
-        str: 10,
         range: 5,
+        str: 10,
+        mag: 2,
+        wis: 1,
       }
     }
   },
@@ -62,9 +71,9 @@ export var initialGameState: App.GameState = {
   meta: {
     timelineWaitSize: 1000,
     fps: 30,
+    skills: GameAssets.skills,
   },
 }
-
 
 var idCounter = 1
 
