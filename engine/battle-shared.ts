@@ -1,25 +1,23 @@
 //
 // This file is shared between server & client
 //
-export type Action
+export type TargetQuery
   = { type: 'attack' }
   | { type: 'skill', skill: App.SkillId }
   // | { type: 'defend' }
   // | { type: 'evade' }
 
-export type ActionType = 'attack' | 'skill'
 export type ValidTargets = App.UnitId[] | App.RadiusTarget
 
 
-export function getValidTargets (game: App.GameState, actorId: string, action: Action): ValidTargets {
+export function getValidTargets (game: App.GameState, actorId: string, query: TargetQuery): ValidTargets {
 
   var actor = game.units[actorId]
   var allUnits = Object.keys(game.units).map( id => game.units[id] )
 
-  if ( action.type === 'skill' ) {
-    return getSkillValidTargets(game, actor, game.meta.skills.find( s => s.name === action.skill )!)
+  if ( query.type === 'skill' ) {
+    return getSkillValidTargets(game, actor, game.meta.skills.find( s => s.name === query.skill )!)
   }
-
   else if ( actor.type === 'player' ) {
     return allUnits.filter( u => u.type === 'enemy' ).map(getId)
   }

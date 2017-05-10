@@ -48,6 +48,8 @@ declare namespace App {
     = { type: 'attack', target: UnitId }
     | { type: 'skill', skill: SkillId, target: UnitId | { x: number, y: number } }
 
+  export type BattleActionType = 'attack' | 'skill'
+
 
   type ActionState
     = {

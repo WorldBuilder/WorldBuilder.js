@@ -11,7 +11,7 @@ interface Attrs {
 }
 
 interface State {
-  actionType: null | Battle.ActionType
+  actionType: null | App.BattleActionType,
   skill: null | App.SkillId,
   validTargets: null | Battle.ValidTargets,
 }
@@ -79,7 +79,7 @@ function renderPrompt ({ state, attrs }: HelperParams) {
   )
 }
 
-function selectAction(state: State, attrs: Attrs, action: Battle.ActionType) {
+function selectAction(state: State, attrs: Attrs, action: App.BattleActionType) {
   state.actionType = action
 
   if ( action === 'skill' && ! state.skill ) {
