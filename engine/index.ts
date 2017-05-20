@@ -141,6 +141,11 @@ export function gameStep (game: App.GameState): App.Step {
       game.timeline[id] = { type: 'wait', value: newValue }
 
       if ( wasWaiting && noLongerWaiting ) {
+        //
+        // The unit has cross the timeline act mark.
+        // Store a "decision slot" in the game state,
+        // causing the game to pause until the unit makes a decision.
+        //
         game.pendingDecisions[id] = { id: String(idCounter++), action: null }
       }
     }

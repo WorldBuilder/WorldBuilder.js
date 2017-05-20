@@ -61,6 +61,7 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
   - [ ] Draw intent path for user player
   - [ ] Draw retreat path for user player during battle
   - [ ] Implement fog of war
+  - [ ] Draw orange highlight on targeted units
 - [x] Battle Timeline Loop
   - [x] Move units down the timeline based on their stats
   - [x] Pause when it's a player's turn to decide on an action
