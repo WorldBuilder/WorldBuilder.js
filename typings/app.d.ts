@@ -74,6 +74,7 @@ declare namespace App {
     frame: number,
     mode: 'battle' | 'explore'
     map: {
+      backgroundUrl: string,
       width: number,
       height: number,
     },

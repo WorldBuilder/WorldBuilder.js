@@ -19,6 +19,7 @@ export default {
     var game = vnode.attrs.game
 
     var style = {
+      'background-image': `url(${ game.map.backgroundUrl })`,
       height: game.map.height,
       width: game.map.width,
     }

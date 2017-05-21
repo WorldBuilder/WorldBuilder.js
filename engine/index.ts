@@ -8,6 +8,7 @@ export var initialGameState: App.GameState = {
   frame: 0,
   mode: 'battle',
   map: {
+    backgroundUrl: 'http://i0.kym-cdn.com/entries/icons/facebook/000/013/564/aP2dv.jpg',
     width: 800,
     height: 400,
   },
