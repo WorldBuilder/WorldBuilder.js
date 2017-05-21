@@ -65,19 +65,25 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
 - [x] Battle Timeline Loop
   - [x] Move units down the timeline based on their stats
   - [x] Pause when it's a player's turn to decide on an action
-  - [x] When an action is done, set back unit on the timeline towards the beginning
+  - [x] When a skill is done, set back unit on the timeline towards the beginning
   - [x] When attacking, move unit towards target and stike when in range
   - [ ] Calculate setback based on battle decision
   - [ ] Implement basic attack animation
   - [ ] Implement pausing for certain animations (skills, etc.)
 - [x] Foundation for making battle decisions (skills, items, etc.)
-  - [ ] Implement defend
-  - [ ] Implement skill system
-  - [ ] Implement "cancel" as a skill effect
+- [x] Implement skill system
+  - [x] Implement "single-target" skill target type
+  - [ ] Implement "radius" (area of effect) skill target type
+  - [ ] Implement "cancel" skill effect
+- [ ] Implement items
+  - [ ] Implement item inventory
+  - [ ] Implement item usage during battle
+  - [ ] Implement item usage outside of battle
 - [ ] Basic Chat System
   - [ ] Allow DM to masquerade as NPCs
   - [ ] Render chat bubbles
 - [ ] Build DM Dashboard
+  - [x] Allow DM to specify skills using a [TOML](https://github.com/toml-lang/toml) file
   - [ ] Allow DM to specify enemies and stats using a [TOML](https://github.com/toml-lang/toml) file
   - [ ] Allow DM to manually control where enemies move
   - [ ] Allow DM to spawn and manipulate enemies
