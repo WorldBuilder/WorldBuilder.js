@@ -1,10 +1,16 @@
 import * as Battle from './battle'
 import * as GameAssets from './game-assets'
 
+type Unit = App.Unit
+type Effect = App.Effect
+type GameState = App.GameState
+type UserInput = App.UserInput
+type UnitStats = App.UnitStats
+type SkillEffect = App.SkillEffect
 
 GameAssets.sync()
 
-export var initialGameState: App.GameState = {
+export var initialGameState: GameState = {
   frame: 0,
   mode: 'battle',
   map: {
@@ -21,12 +27,11 @@ export var initialGameState: App.GameState = {
       currentHp: 30,
       maxHp: 30,
       pos: { x: 100, y: 100 },
-      skills: ['singe'],
+      skills: ['melee-attack', 'singe'],
       stats: {
         resilience: 50,
         speed: 10,
-        range: 5,
-        str: 10,
+        str: 5,
         mag: 5,
         wis: 1,
       }
@@ -40,12 +45,11 @@ export var initialGameState: App.GameState = {
       currentHp: 14,
       maxHp: 20,
       pos: { x: 300, y: 200 },
-      skills: [],
+      skills: ['melee-attack'],
       stats: {
         resilience: 50,
         speed: 20,
-        range: 5,
-        str: 10,
+        str: 5,
         mag: 2,
         wis: 1,
       }
@@ -78,7 +82,7 @@ export var initialGameState: App.GameState = {
 
 var idCounter = 1
 
-export function gameStep (game: App.GameState): App.Step {
+export function gameStep (game: GameState): App.Step {
   var effects: App.Effect[] = []
   //
   // Handle user input, which may resolve pending decisions
@@ -166,7 +170,7 @@ export function gameStep (game: App.GameState): App.Step {
   // Handle active intents
   //
   for ( let id in game.intents ) {
-    let intent = game.intents[id]
+    const intent = game.intents[id]
 
     let unit = game.units[id]
     if ( ! unit ) {
@@ -176,7 +180,7 @@ export function gameStep (game: App.GameState): App.Step {
     if ( intent.type === 'passive' ) continue;
 
 
-    if ( intent.type === 'target' ) {
+    if ( intent.type === 'single-target' ) {
 
       let target = game.units[intent.target]
       if ( ! target ) {
@@ -184,28 +188,35 @@ export function gameStep (game: App.GameState): App.Step {
         continue
       }
 
+      let skill = game.meta.skills.find( s => s.name === intent.skillName )! // ts
 
-      if ( intent.action === 'attack' ) {
-        let dir = { x: target.pos.x - unit.pos.x, y: target.pos.y - unit.pos.y }
-        let distance = Math.sqrt(dir.x*dir.x + dir.y*dir.y)
 
-        if ( distance <= (target.size + unit.size + unit.stats.range) ) {
-          // Target is within range of attack
-          var damage = unit.stats.str + Math.round( Math.random() * unit.stats.str * 0.25 )
-          target.currentHp = Math.max(target.currentHp - damage, 0)
+      let dir = { x: target.pos.x - unit.pos.x, y: target.pos.y - unit.pos.y }
+      let distance = Math.sqrt(dir.x*dir.x + dir.y*dir.y)
 
-          effects.push({ type: 'battle:hp', actorId: unit.id, targetId: target.id, mod: 0-damage })
+      if ( distance <= (target.size + unit.size + skill.range) ) {
+        //
+        // Target is within range of skill
+        //
+        var gameEffects = skill.effects
+          .map( eff => applySkillEffect(game, unit, target, eff) )
 
-          game.intents[unit.id] = { type: 'retreat', pos: game.retreatPoints[unit.id] }
-        }
-        else {
-          // Move towards target
-          dir.x /= distance
-          dir.y /= distance
+        effects = effects.concat(...gameEffects)
 
-          unit.pos.x += dir.x * unit.stats.speed / 10
-          unit.pos.y += dir.y * unit.stats.speed / 10
-        }
+        //
+        // The skill has been performed; now retreat.
+        //
+        game.intents[unit.id] = { type: 'retreat', pos: game.retreatPoints[unit.id] }
+      }
+      else {
+        //
+        // Move towards target
+        //
+        dir.x /= distance
+        dir.y /= distance
+
+        unit.pos.x += dir.x * unit.stats.speed / 10
+        unit.pos.y += dir.y * unit.stats.speed / 10
       }
 
     }
@@ -233,13 +244,31 @@ export function gameStep (game: App.GameState): App.Step {
 }
 
 
-export function registerUserInput (game: App.GameState, actorId: string, input: App.UserInput) {
+export function registerUserInput (game: GameState, actorId: string, input: UserInput) {
   game.inputs[actorId] = input
   console.log("Registering user input by", actorId, input)
 }
 
-function hasPendingBattleDecision (game: App.GameState) {
+function hasPendingBattleDecision (game: GameState) {
   return Object.keys(game.pendingDecisions)
     .filter( id => game.pendingDecisions[id].action === null )
     .length > 0
+}
+
+
+function applySkillEffect (game: GameState, actor: Unit, target: Unit, effect: SkillEffect): Effect[] {
+
+  if ( effect.type === 'damage' ) {
+    let damage = effect.amount
+    for (let stat in effect.scale) {
+      damage += actor.stats[stat as keyof UnitStats] * effect.scale[stat as keyof UnitStats]
+    }
+
+    target.currentHp = Math.max(target.currentHp - damage, 0)
+
+    return [{ type: 'battle:hp', actorId: actor.id, targetId: target.id, mod: 0-damage }]
+  }
+  else {
+    return []
+  }
 }

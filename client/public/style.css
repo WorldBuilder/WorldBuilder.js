@@ -142,22 +142,22 @@ body {
   padding: 1rem;
 }
 
-.decision-prompt ul.options {
+.decision-prompt .options {
   // list-style: none;
   padding: 0 0 0 1.5rem;
 }
-.decision-prompt ul.options li {
+.decision-prompt .options li {
   border: 2px solid transparent;
   cursor: pointer;
 }
-.decision-prompt ul.options li.active {
+.decision-prompt .options li.active {
   border-color: var(--focused-color);
 }
-.decision-prompt ul.options li:hover {
+.decision-prompt .options li:hover {
   background: white;
 }
 
-.decision-prompt ul.options + ul.options {
+.decision-prompt .options + .options {
   border-top: 1px solid #ccc;
   padding-top: 0.75rem;
 }

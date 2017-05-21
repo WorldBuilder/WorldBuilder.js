@@ -30,7 +30,7 @@ This app is a client/server architecture with syncing game state, so the code ca
 Starting from the user's perspective, when making a decision:
 
 - The [DecisionPrompt](./client/components/battle/decision-prompt.ts) component activates
-- User selects action type (attack, skill, etc.)
+- User selects action type (skill or item)
   - User selects a skill if needed
 - Game engine displays a list of valid targets based on [getValidTargets](./engine/battle-shared.ts)
 - User selects a target
@@ -70,7 +70,7 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
   - [ ] Calculate setback based on battle decision
   - [ ] Implement basic attack animation
   - [ ] Implement pausing for certain animations (skills, etc.)
-- [x] Foundation for making battle decisions (attack, defend, etc.)
+- [x] Foundation for making battle decisions (skills, items, etc.)
   - [ ] Implement defend
   - [ ] Implement skill system
   - [ ] Implement "cancel" as a skill effect

@@ -1,12 +1,29 @@
 
 [[skill]]
+name = "melee-attack"
+description = """
+  Nothing feels better than a good old punch in the face.
+"""
+range = 5
+cost = {}
+time = { limit = 4 }
+target = { type = "single", valid = "enemy" }
+
+[[skill.effect]]
+type = "damage"
+amount = 2
+scale = { str = 1 }
+
+
+
+[[skill]]
 name = "singe"
 description = """
   Singe your enemy with a quick magic attack.
 """
 range = 300
 cost = { mp = 4 }
-time = { pre = 0.25, post = 0 }
+time = { chargeup = 0.25 }
 target = { type = "single", valid = "enemy" }
 
 [[skill.effect]]
@@ -23,7 +40,7 @@ description = """
 """
 range = 400
 cost = { mp = 4 }
-time = { pre = 0.5, post = 1 }
+time = { chargeup = 0.5, cooldown = 1 }
 target = { type = "radius", size = 50, affects = "all" }
 
 [[skill.effect]]
@@ -40,7 +57,7 @@ description = """
 """
 range = 600
 cost = { mp = 4 }
-time = { pre = 0.5, post = 0.5 }
+time = { chargeup = 0.5, cooldown = 0.5 }
 target = { type = "single", valid = "ally" }
 
 [[skill.effect]]

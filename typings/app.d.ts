@@ -17,7 +17,6 @@ declare namespace App {
   interface UnitStats {
     resilience: number,
     speed: number,
-    range: number,
     str: number,
     mag: number,
     wis: number,
@@ -45,10 +44,10 @@ declare namespace App {
     | { type: 'set-retreat-point', pos: Coordinate }
 
   export type BattleAction
-    = { type: 'attack', target: UnitId }
-    | { type: 'skill', skill: SkillId, target: UnitId | { x: number, y: number } }
+    = { type: 'skill', skill: SkillId, target: UnitId | { x: number, y: number } }
+    | { type: 'item', /* TODO */ }
 
-  export type BattleActionType = 'attack' | 'skill'
+  export type BattleActionType = 'skill' | 'item'
 
 
   type ActionState
@@ -56,9 +55,9 @@ declare namespace App {
         type: 'passive'
       }
     | {
-        type: 'target',
+        type: 'single-target',
         target: UnitId,
-        action: 'move' | 'attack' | 'skill' | 'defend'
+        skillName: SkillId,
       }
     | {
         type: 'retreat',
@@ -111,10 +110,10 @@ declare namespace App {
         message: string,
       }
     | {
-        type: 'battle:decision',
+        type: 'battle:decision:skill:target',
         actorId: UnitId,
-        targetId?: UnitId,
-        action: 'attack'
+        targetId: UnitId,
+        skillName: string,
       }
     | {
         type: 'battle:hp',
@@ -139,8 +138,9 @@ declare namespace App {
       sp?: number,
     },
     time: {
-      pre: number,
-      post: number,
+      chargeup: number,
+      cooldown: number,
+      limit: number,
     },
     target: SkillTarget,
     effects: SkillEffect[],

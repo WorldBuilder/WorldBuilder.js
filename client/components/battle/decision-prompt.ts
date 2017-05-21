@@ -44,7 +44,7 @@ function renderStatus ({ state, attrs }: HelperParams) {
 function renderPrompt ({ state, attrs }: HelperParams) {
   var unit = Game.get( attrs.unitId )
 
-  var actionType = state.actionType
+  const actionType = state.actionType
 
   return m('.decision.prompt',
 
@@ -53,20 +53,17 @@ function renderPrompt ({ state, attrs }: HelperParams) {
       : m('h3', `${unit.name}'s Move:`)
     ,
 
-    m('button', { onclick: ()=> selectAction(state, attrs, 'attack') }, "Attack"),
-
     unit.skills.length > 0 &&
     m('button', { onclick: ()=> selectAction(state, attrs, 'skill') }, "Skill"),
 
-    // m('button', { onclick: ()=> selectAction(state, attrs, 'defend') }, "Defend"),
-    // m('button', { onclick: ()=> selectAction(state, attrs, 'evade') }, "Evade"),
+    m('button', "Item (todo)"),
 
 
     actionType === 'skill' &&
     m('ul.options',
       unit.skills.map( skillId =>
         m('li', {
-          class: actionType && actionType === 'skill' && state.skill === skillId ? 'active' : '',
+          class: state.skill === skillId ? 'active' : '',
           onclick: ()=> {
             state.skill = skillId
             selectAction(state, attrs, 'skill')
@@ -84,11 +81,6 @@ function selectAction(state: State, attrs: Attrs, action: App.BattleActionType) 
 
   if ( action === 'skill' && ! state.skill ) {
     state.validTargets = null
-    return;
-  }
-
-  if ( action === 'attack' ) {
-    state.validTargets = Battle.getValidTargets(attrs.game, attrs.unitId, { type: action })
   }
   else if ( action === 'skill' && state.skill ) {
     state.validTargets = Battle.getValidTargets(attrs.game, attrs.unitId, { type: action, skill: state.skill })
@@ -114,9 +106,6 @@ function promptTarget (state: State, attrs: Attrs) {
 
       return renderTargets(attrs.pd.id, unit, targets, { type: 'skill', skill: state.skill, target: '' })
     }
-    else if ( actionType === 'attack' ) {
-      return renderTargets(attrs.pd.id, unit, targets, { type: 'attack', target: '' })
-    }
 
   }
 
@@ -126,18 +115,18 @@ function promptTarget (state: State, attrs: Attrs) {
 
 
 function renderTargets (pdid: string, actor: App.Unit, targets: App.UnitId[], action: App.BattleAction) {
-  return m('ul.options',
-    targets.length === 0
-      ? m('h4', "No valid targets.")
-      : targets.map( targetId => {
-          var a = action
-          return m('li', {
-            onclick: ()=> Game.act(actor.id, {
-              type: 'decision',
-              pendingDecisionId: pdid,
-              action: { ...action, target: targetId }
-            })
-          }, `${ a.type === 'skill' ? a.skill : a.type }: ${Game.get(targetId).name}`)
-        })
-    )
+  if ( targets.length === 0 ) {
+    return m('.options', m('h4', 'No valid targets.'))
+  }
+
+  return m('ul.options', targets.map( targetId => {
+    const a = action
+    return m('li', {
+      onclick: ()=> Game.act(actor.id, {
+        type: 'decision',
+        pendingDecisionId: pdid,
+        action: { ...a, target: targetId }
+      })
+    }, `${ a.type === 'skill' ? a.skill : a.type }: ${Game.get(targetId).name}`)
+  }))
 }
