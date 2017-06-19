@@ -6,6 +6,11 @@ WorldBuilder.js is a project intended to provide a multiplayer environment for d
 - **Hackable**. If you know JavaScript, you'll be able to tweak and extend the engine to your liking.
 - **Locally Served**. The source code is freely available to run on your own computer.
 
+## Requirements
+
+- node 7.8.0+
+- [Tiled Map Editor](www.mapeditor.org) (for dungeon masters creating maps)
+
 ## Setup
 
 ```bash
@@ -14,6 +19,8 @@ $ cd WorldBuilder.js
 $ npm install
 $ npm start
 ```
+
+Now visit [localhost:4242](http://localhost:4242).
 
 ## Gameplay
 
