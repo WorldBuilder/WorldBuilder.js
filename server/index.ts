@@ -7,6 +7,7 @@ var server = createServer(app)
 //
 // Pipework
 //
+require('./config/config-game-assets').default(app)
 require('./config/config-web-assets').default(app)
 require('./config/config-websockets').default(server)
 

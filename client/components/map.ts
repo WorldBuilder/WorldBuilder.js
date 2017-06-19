@@ -19,9 +19,9 @@ export default {
     var game = vnode.attrs.game
 
     var style = {
-      'background-image': `url(${ game.map.backgroundUrl })`,
-      height: game.map.height,
-      width: game.map.width,
+      'background-image': `url(${ game.map.imageUrl })`,
+      height: game.map.height * game.map.tileSize,
+      width: game.map.width * game.map.tileSize,
     }
 
     return m('.map',
@@ -40,7 +40,7 @@ export default {
 
 function renderUnit (game: App.GameState, unit: App.Unit) {
   var pos = unit.pos
-  var unitSize = unit.size * 2 // unit.size is radius
+  var unitSize = unit.size * 1 // unit.size is radius
 
   var style = {
     transform: `translate(${ pos.x }px, ${ pos.y }px)`,

@@ -72,11 +72,7 @@ declare namespace App {
   export interface GameState {
     frame: number,
     mode: 'battle' | 'explore'
-    map: {
-      backgroundUrl: string,
-      width: number,
-      height: number,
-    },
+    map: Map,
     units: Record<UnitId, Unit>,
 
     // number is where they are on timeline
@@ -103,6 +99,26 @@ declare namespace App {
       skills: Skill[],
     }
   }
+
+  export interface Map {
+    height: number,
+    id: string,
+    imageUrl: string,
+    tileMapCols: number,
+    tiles: TileType[][],
+    tileSize: number,
+    width: number,
+  }
+
+  //
+  // Unfortunately, due to the way `declare namespace` works,
+  // we have to duplicate this information here.
+  // Fortunately, TypeScript is structural.
+  enum TileType {
+    Empty = 0,
+    Wall = 1,
+  }
+
 
   export type Effect
     = {

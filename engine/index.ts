@@ -13,11 +13,7 @@ GameAssets.sync()
 export var initialGameState: GameState = {
   frame: 0,
   mode: 'battle',
-  map: {
-    backgroundUrl: 'http://i0.kym-cdn.com/entries/icons/facebook/000/013/564/aP2dv.jpg',
-    width: 800,
-    height: 400,
-  },
+  map: GameAssets.maps[0],
   units: {
     '10': {
       id: '10',

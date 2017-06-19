@@ -57,6 +57,7 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
 
 - [x] Server-client data syncing
   - [ ] Optimize data sent over the wire
+  - [ ] Occasionally save gamestate to disk on server-side
 - [ ] User Authentication
   - [ ] Allow DM to specify usernames & passwords in a [TOML](https://github.com/toml-lang/toml) file
 - [x] Render map with existing units
