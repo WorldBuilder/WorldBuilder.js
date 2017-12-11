@@ -1,6 +1,8 @@
 import * as m from 'mithril'
 import Game from '../models/game'
 
+var getClickPoint = require('mouse-event-offset')
+
 
 interface Attrs {
   game: App.GameState,
@@ -25,14 +27,15 @@ export default {
     }
 
     return m('.map',
-      { style, oncontextmenu: setRetreatPoint },
+      { style, onclick: handleClick, oncontextmenu: handleRightClick },
 
       m('.scroll-padding-hack'),
 
       Game.units.map( unit => [
         renderUnit(game, unit),
-        renderRetreatPath(game, unit),
-      ])
+      ]),
+
+      Game.mapMode.type === 'move-point' && renderMovePaths(game, Game.mapMode.actorId),
     )
   }
 } as m.Component<Attrs, State>
@@ -54,7 +57,7 @@ function renderUnit (game: App.GameState, unit: App.Unit) {
     current: { width: `${unit.currentHp / unit.maxHp * 100}%` },
   }
 
-  return m('.unit', Game.focus(unit.id, { style: style, class: unit.type }),
+  return m('.unit', Game.unitFocus(unit.id, { style: style, class: unit.type }),
 
     m('.bar-max', { style: hp.max }, m('.bar', { style: hp.current })),
 
@@ -62,23 +65,23 @@ function renderUnit (game: App.GameState, unit: App.Unit) {
   )
 }
 
-
-function setRetreatPoint (e: any) {
-  e.preventDefault()
-  var rect    = e.currentTarget.getBoundingClientRect()
-    , offsetX = e.clientX - rect.left
-    , offsetY = e.clientY - rect.top
-
-  if ( Game.userPlayer ) {
-    Game.act(Game.userPlayer.id, {
-      type: 'set-retreat-point',
-      pos: { x: offsetX, y: offsetY },
-    })
-  }
+function renderMovePaths (game: App.GameState, actorId: App.UnitId) {
+  var selected = Game.mapClickEvent()
+  var considering = Game.mapHoverEvent()
+  // TODO: USE l1-path-finder TO RENDER STUFF ON SCREEN
+  return null
 }
 
 
-function renderRetreatPath (game: App.GameState, unit: App.Unit) {
+function handleClick (e: Event) {
+  var [ex, ey] = getClickPoint(e)
+  Game.mapClickEvent({
+    x: Math.floor(ex / Game.state.map.tileSize),
+    y: Math.floor(ey / Game.state.map.tileSize),
+  })
+}
+
+function handleRightClick (e: Event) {
+  e.preventDefault()
   // TODO
-  return null
 }

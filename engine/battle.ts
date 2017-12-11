@@ -47,11 +47,11 @@ export function handleAction(game: GameState, actorId: UnitId, action: BattleAct
 }
 
 function handleSingleTargetSkill (game: GameState, actorId: UnitId, skill: Skill, target: Unit): Effect[] {
-  game.intents[actorId] = { type: 'single-target', target: target.id, skillName: skill.name }
+  game.intents[actorId] = { type: 'target-unit', target: target.id, skillName: skill.name }
   delete game.pendingDecisions[actorId]
 
   if ( game.mode === 'battle' ) {
-    game.timeline[actorId] = { type: 'act', step: 0, limit: game.meta.fps * (skill.time.limit) }
+    game.timeline[actorId] = { type: 'act', current: 0, target: game.meta.fps * (skill.time.limit) }
   }
 
   return [{ type: 'battle:decision:skill:target', actorId: actorId, targetId: target.id, skillName: skill.name }]

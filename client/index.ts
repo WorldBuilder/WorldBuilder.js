@@ -15,10 +15,20 @@ function drawGame () {
       m(UnitStats, { game })
     ),
     m('.main',
-      m(Map, { game })
+      renderMapLabel(),
+      m('.scroller',
+        m(Map, { game })
+      )
     ),
     m(Timeline, { game })
   )
 }
 
 m.mount(document.body, { view: drawGame })
+
+function renderMapLabel () {
+  var mode = Game.mapMode
+  if ( mode.type === 'none' ) return m('.label')
+
+  return m('.label', mode.label)
+}

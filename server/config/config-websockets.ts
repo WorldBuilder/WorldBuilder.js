@@ -15,7 +15,7 @@ export default function configWebsockets (server: Server) {
 
   io.on('connection', socket => {
     console.log("a user connected")
-    socket.emit('gs', { game: Game.state, effects: [] })
+    socket.emit('gs', { game: cleanGameStateForNetwork(Game.state), effects: [] })
 
     //
     // Attach player to connected user
@@ -60,7 +60,7 @@ export default function configWebsockets (server: Server) {
     })
 
     socket.on('disconnect', () => {
-      console.log('nooo')
+      console.log('disconnect')
       sub.unsubscribe()
     })
   })
@@ -77,6 +77,10 @@ interface GameStep {
 var stateStream = multicast(
   most.generate<App.Step>(gameLoop, 1000 / Game.state.meta.fps)
     .skipRepeatsWith( (a,b) => a.game.frame === b.game.frame && b.effects.length === 0 )
+    .map( (data) => {
+      data.game = cleanGameStateForNetwork(data.game)
+      return data
+    })
     .tap( ({ game }) => console.log("Frame", game.frame, game.timeline, game.pendingDecisions) )
 )
 
@@ -95,4 +99,14 @@ function delayPromise<T>(ms: number, value: T) {
   return new Promise<T>(resolve => {
     setTimeout(() => resolve(value), ms)
   })
+}
+
+function cleanGameStateForNetwork (game: App.GameState) {
+  //
+  // Don't send over binary data
+  //
+  var clean = { ...game }
+  clean.map = { ...clean.map }
+  delete clean.map.planner
+  return clean
 }

@@ -1,5 +1,6 @@
 import * as io from 'socket.io-client'
 import * as m from 'mithril'
+import * as Stream from 'mithril/stream'
 
 
 var state: App.GameState;
@@ -8,6 +9,18 @@ var gameState: App.GameState | null = null
 var userPlayer: App.Player | null = null
 var isDM = false
 
+type MapMode
+  = { type: 'none' }
+  | { type: 'move-point', actorId: App.UnitId, label: string }
+  | { type: 'skill-point', actorId: App.UnitId, label: string }
+
+var mapMode = { type: 'none' } as MapMode
+
+var mapHoverEvent = Stream(null as null | App.Coordinate)
+var mapClickEvent = Stream(null as null | App.Coordinate)
+
+mapHoverEvent.map( _ => m.redraw() )
+mapClickEvent.map( _ => m.redraw() )
 
 //
 // Connet to server and handle data syncing
@@ -34,10 +47,21 @@ socket.on('dm', () => {
 // Return one single object for convenience
 //
 export default {
+
+  mapHoverEvent: mapHoverEvent,
+  mapClickEvent: mapClickEvent,
+
+  get mapMode () { return mapMode },
+  set mapMode (mode: MapMode) {
+    mapMode = mode
+    mapHoverEvent(null)
+    mapClickEvent(null)
+  },
+
+
   get state () { return state },
   get userPlayer () { return userPlayer },
   get isDM () { return isDM },
-
 
   get (id: string) {
     return state.units[id]
@@ -56,7 +80,7 @@ export default {
   //
   // UI Helpers
   //
-  focus (unitId: App.UnitId, obj?: any) {
+  unitFocus (unitId: App.UnitId, obj?: any) {
     obj = obj || {}
     obj['data-id'] = unitId
     obj.onmouseenter = onmouseenter
@@ -65,7 +89,7 @@ export default {
     var className = obj.class || ''
     obj.class = (selectedUnitId === unitId) ? `${className} focused` : className
     return obj
-  }
+  },
 }
 
 //

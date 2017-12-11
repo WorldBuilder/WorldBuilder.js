@@ -16,7 +16,7 @@ declare namespace App {
 
   interface UnitStats {
     resilience: number,
-    speed: number,
+    movement: number,
     str: number,
     mag: number,
     wis: number,
@@ -34,8 +34,8 @@ declare namespace App {
       }
     | {
         type: 'act',
-        step: number, // This increments once per frame
-        limit: number, // The max number of steps before the action gets cancelled
+        current: number, // This increments once per frame
+        target: number, // The limit to reach before performing the action
       }
   type Timeline = Record<UnitId, TimelinePos>
 
@@ -45,9 +45,9 @@ declare namespace App {
 
   export type BattleAction
     = { type: 'skill', skill: SkillId, target: UnitId | { x: number, y: number } }
-    | { type: 'item', /* TODO */ }
+    | { type: 'item', target: UnitId | { x: number, y: number } }
 
-  export type BattleActionType = 'skill' | 'item'
+  export type BattleActionType = 'skill' | 'item' | 'move'
 
 
   type ActionState
@@ -55,13 +55,19 @@ declare namespace App {
         type: 'passive'
       }
     | {
-        type: 'single-target',
+        type: 'move',
+        target: Coordinate,
+        // cooldown: number,
+      }
+    | {
+        type: 'target-unit',
         target: UnitId,
         skillName: SkillId,
       }
     | {
-        type: 'retreat',
-        pos: Coordinate
+        type: 'target-point',
+        target: Coordinate,
+        skillName: SkillId,
       }
 
   export type PendingDecision = {
@@ -71,8 +77,8 @@ declare namespace App {
 
   export interface GameState {
     frame: number,
-    mode: 'battle' | 'explore'
-    map: Map,
+    mode: 'battle' | 'explore',
+    map: MapWithPlanner,
     units: Record<UnitId, Unit>,
 
     // number is where they are on timeline
@@ -110,6 +116,19 @@ declare namespace App {
     width: number,
   }
 
+  export interface MapWithPlanner {
+    height: number,
+    id: string,
+    imageUrl: string,
+    tileMapCols: number,
+    tiles: TileType[][],
+    planner: {
+      search: (x1: number, y1: number, x2: number, y2: number, out: number[]) => number
+    },
+    tileSize: number,
+    width: number,
+  }
+
   //
   // Unfortunately, due to the way `declare namespace` works,
   // we have to duplicate this information here.
@@ -136,6 +155,15 @@ declare namespace App {
         actorId: UnitId,
         targetId: UnitId,
         mod: number, // negative for damage, positive for heal, zero for miss.
+      }
+    | {
+        type: 'movement-blocked',
+        actorId: UnitId,
+        blockPos: Coordinate,
+      }
+    | {
+        type: 'movement-impossible',
+        actorId: UnitId,
       }
     | {
         type: 'retreat-point',

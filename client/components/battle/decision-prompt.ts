@@ -11,15 +11,24 @@ interface Attrs {
 }
 
 interface State {
-  actionType: null | App.BattleActionType,
-  skill: null | App.SkillId,
+  choice: null | ActionChoice,
   validTargets: null | Battle.ValidTargets,
+}
+
+type ActionChoice = SkillChoice | MoveChoice
+
+type SkillChoice = {
+  type: 'skill',
+  skill: null | App.SkillId,
+}
+type MoveChoice = {
+  type: 'move',
 }
 
 
 export default {
   oninit(vnode) {
-    vnode.state.actionType = null
+    vnode.state.choice = null
     vnode.state.validTargets = null
   },
   view(vnode) {
@@ -44,7 +53,7 @@ function renderStatus ({ state, attrs }: HelperParams) {
 function renderPrompt ({ state, attrs }: HelperParams) {
   var unit = Game.get( attrs.unitId )
 
-  const actionType = state.actionType
+  const choice = state.choice
 
   return m('.decision.prompt',
 
@@ -58,75 +67,89 @@ function renderPrompt ({ state, attrs }: HelperParams) {
 
     m('button', "Item (todo)"),
 
+    m('button', { onclick: ()=> selectAction(state, attrs, 'move') }, "Move"),
 
-    actionType === 'skill' &&
+
+    choice && choice.type === 'skill' && skillView(state, attrs, choice),
+    choice && choice.type === 'move'  && moveView(state, attrs, choice),
+  )
+}
+
+function skillView (state: State, attrs: Attrs, choice: SkillChoice) {
+  const unit = Game.get( attrs.unitId )
+  const skill = choice.skill
+  const targets = skill &&
+    Battle.getValidTargets(attrs.game, attrs.unitId, { type: 'skill', skill: skill })
+
+  return [
+    //
+    // Which skill?
+    //
     m('ul.options',
       unit.skills.map( skillId =>
         m('li', {
-          class: state.skill === skillId ? 'active' : '',
+          class: skill === skillId ? 'active' : '',
           onclick: ()=> {
-            state.skill = skillId
-            selectAction(state, attrs, 'skill')
+            choice.skill = skillId
           },
         }, `Use skill: ${skillId}`)
       )
     ),
 
-    promptTarget(state, attrs)
-  )
+    //
+    // Target whom with selected skill? (unit target)
+    //
+    skill && targets && Array.isArray(targets) && [
+      targets.length === 0 &&
+        m('.options', m('h4', 'No valid targets.'))
+      ,
+
+      m('ul.options', targets.map( targetId => {
+        return m('li', {
+          onclick: () =>
+            Game.act(unit.id, {
+              type: 'decision',
+              pendingDecisionId: attrs.pd.id,
+              action: { type: 'skill', skill: skill, target: targetId }
+            })
+        }, `${ choice.skill }: ${Game.get(targetId).name}`)
+      }))
+    ]
+    //
+    // Target where with selected skill? (point target)
+    //
+    // TODO
+  ]
 }
+
+function moveView (state: State, attrs: Attrs, choice: MoveChoice) {
+  const unit = Game.get( attrs.unitId )
+  const dest = Game.mapClickEvent()
+  return [
+    m('p', "Please select a point on the map."),
+    dest &&
+      m('button', { onclick: () => submitMovement(state, attrs, dest) }, `Move to (${dest.x}, ${dest.y})`)
+    ,
+  ]
+}
+
+
 
 function selectAction(state: State, attrs: Attrs, action: App.BattleActionType) {
-  state.actionType = action
+  var unit = Game.get( attrs.unitId )
 
-  if ( action === 'skill' && ! state.skill ) {
+  if ( action === 'skill' ) {
     state.validTargets = null
+    state.choice = { type: 'skill', skill: null }
   }
-  else if ( action === 'skill' && state.skill ) {
-    state.validTargets = Battle.getValidTargets(attrs.game, attrs.unitId, { type: action, skill: state.skill })
-  }
-  else {
-    state.validTargets = []
+  else if ( action === 'move' ) {
+    state.validTargets = null
+    state.choice = { type: 'move' }
+    Game.mapMode = { type: 'move-point', actorId: unit.id, label: `${unit.name}'s move` }
   }
 }
 
-function promptTarget (state: State, attrs: Attrs) {
-  const actionType = state.actionType
-  var targets = state.validTargets
 
-  if ( ! actionType || ! targets ) return null
-
-
-  if ( Array.isArray(targets) ) {
-
-    var unit = Game.get( attrs.unitId )
-
-    if ( actionType === 'skill' ) {
-      if ( ! state.skill ) return null
-
-      return renderTargets(attrs.pd.id, unit, targets, { type: 'skill', skill: state.skill, target: '' })
-    }
-
-  }
-
-  // TODO: SET VIEW STATE TO ACCEPT POINT FOR AOE RADIUS
-  return m('h4', 'Select point on map')
-}
-
-
-function renderTargets (pdid: string, actor: App.Unit, targets: App.UnitId[], action: App.BattleAction) {
-  if ( targets.length === 0 ) {
-    return m('.options', m('h4', 'No valid targets.'))
-  }
-
-  return m('ul.options', targets.map( targetId => {
-    const a = action
-    return m('li', {
-      onclick: ()=> Game.act(actor.id, {
-        type: 'decision',
-        pendingDecisionId: pdid,
-        action: { ...a, target: targetId }
-      })
-    }, `${ a.type === 'skill' ? a.skill : a.type }: ${Game.get(targetId).name}`)
-  }))
+function submitMovement(state: State, attrs: Attrs, dest: App.Coordinate) {
+  // TODO: MODIFY AND INVOKE Game.act()
 }

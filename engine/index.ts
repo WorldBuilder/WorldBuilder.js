@@ -13,7 +13,7 @@ GameAssets.sync()
 export var initialGameState: GameState = {
   frame: 0,
   mode: 'battle',
-  map: GameAssets.maps[0],
+  map: GameAssets.loadMap('example'),
   units: {
     '10': {
       id: '10',
@@ -26,7 +26,7 @@ export var initialGameState: GameState = {
       skills: ['melee-attack', 'singe'],
       stats: {
         resilience: 50,
-        speed: 10,
+        movement: 10,
         str: 5,
         mag: 5,
         wis: 1,
@@ -44,7 +44,7 @@ export var initialGameState: GameState = {
       skills: ['melee-attack'],
       stats: {
         resilience: 50,
-        speed: 20,
+        movement: 20,
         str: 5,
         mag: 2,
         wis: 1,
@@ -52,8 +52,8 @@ export var initialGameState: GameState = {
     }
   },
   timeline: {
-    '10': { type: 'wait', value: 750 },
-    '20': { type: 'wait', value: 750 },
+    '10': { type: 'wait', value: 45 },
+    '20': { type: 'wait', value: 45 },
   },
   retreatPoints: {
     '10': { x: 100, y: 200 },
@@ -70,7 +70,7 @@ export var initialGameState: GameState = {
   inputs: {},
 
   meta: {
-    timelineWaitSize: 1000,
+    timelineWaitSize: 30 * 10, // 10 seconds
     fps: 30,
     skills: GameAssets.skills,
   },
@@ -136,7 +136,7 @@ export function gameStep (game: GameState): App.Step {
 
     if ( pos.type === 'wait' ) {
       let wasWaiting = pos.value > 0
-        , newValue = Math.max(pos.value - unit.stats.resilience/10, 0)
+        , newValue = pos.value - 1
         , noLongerWaiting = newValue === 0
 
       game.timeline[id] = { type: 'wait', value: newValue }
@@ -152,12 +152,18 @@ export function gameStep (game: GameState): App.Step {
     }
     else if ( pos.type === 'act' ) {
 
-      pos.step += 1
+      pos.current += 1
 
-      if ( pos.step >= pos.limit ) {
-        // TODO: Set back differently based on action
-        game.timeline[id] = { type: 'wait', value: game.meta.timelineWaitSize }
-        game.intents[id] = { type: 'passive' }
+      if ( pos.current < pos.target ) {
+        // Unit cannot do anything else while charging up
+        continue
+      }
+      else {
+        // Code flow continues; intent will be handled next.
+
+        // TODO: DELETE
+        // game.timeline[id] = { type: 'wait', value: game.meta.timelineWaitSize }
+        // game.intents[id] = { type: 'passive' }
       }
     }
   }
@@ -173,10 +179,50 @@ export function gameStep (game: GameState): App.Step {
       console.warn('No such unit:', id)
       continue
     }
-    if ( intent.type === 'passive' ) continue;
 
+    if ( intent.type === 'passive' ) {
+      continue
+    }
+    else if ( intent.type === 'move' ) {
 
-    if ( intent.type === 'single-target' ) {
+      // if ( intent.cooldown > 0 ) {
+      //   intent.cooldown -= 1
+      //   continue
+      // }
+
+      if ( intent.target.x === unit.pos.x && intent.target.y === unit.pos.y ) {
+        // Unit has reached its destination!
+        promptPlayerDecision(game, unit.id)
+        continue
+      }
+
+      var path: number[] = []
+      var dist = game.map.planner.search(unit.pos.x, unit.pos.y, intent.target.x, intent.target.y, path)
+
+      if ( dist === Infinity ) {
+        effects.push({ type: 'movement-impossible', actorId: unit.id })
+        promptPlayerDecision(game, unit.id, 20)
+        continue
+      }
+
+      var nextPoint = { x: path[0], y: path[1] } // Next end of straight line path
+      var nextPos = {
+        x: calcDirection(nextPoint.x - unit.pos.x) + unit.pos.x,
+        y: calcDirection(nextPoint.y - unit.pos.y) + unit.pos.y,
+      }
+
+      var blocker = unitAt(game, nextPos.x, nextPos.y)
+      if ( blocker ) {
+        effects.push({ type: 'movement-blocked', actorId: unit.id, blockPos: nextPos })
+        promptPlayerDecision(game, unit.id, 30)
+        continue
+      }
+
+      // Move unit one space towards destination
+      unit.pos = nextPos
+      game.timeline[unit.id] = { type: 'act', current: 0, target: game.meta.fps*2 - unit.stats.movement }
+    }
+    else if ( intent.type === 'target-unit' ) {
 
       let target = game.units[intent.target]
       if ( ! target ) {
@@ -200,36 +246,16 @@ export function gameStep (game: GameState): App.Step {
         effects = effects.concat(...gameEffects)
 
         //
-        // The skill has been performed; now retreat.
+        // The skill has been performed; we're done (for now).
         //
-        game.intents[unit.id] = { type: 'retreat', pos: game.retreatPoints[unit.id] }
+        game.timeline[id] = { type: 'wait', value: game.meta.timelineWaitSize }
+        game.intents[id] = { type: 'passive' }
       }
       else {
         //
-        // Move towards target
+        // TODO: NOTIFY PLAYER THAT UNIT IS OUT OF RANGE
         //
-        dir.x /= distance
-        dir.y /= distance
-
-        unit.pos.x += dir.x * unit.stats.speed / 10
-        unit.pos.y += dir.y * unit.stats.speed / 10
       }
-
-    }
-    else if ( intent.type === 'retreat' ) {
-
-      // Move towards point
-      let dir = { x: intent.pos.x - unit.pos.x, y: intent.pos.y - unit.pos.y }
-      let distance = Math.sqrt(dir.x*dir.x + dir.y*dir.y)
-
-      if ( distance > 1 ) {
-        dir.x /= distance
-        dir.y /= distance
-
-        unit.pos.x += dir.x * unit.stats.speed / 10
-        unit.pos.y += dir.y * unit.stats.speed / 10
-      }
-
     }
   }
 
@@ -267,4 +293,19 @@ function applySkillEffect (game: GameState, actor: Unit, target: Unit, effect: S
   else {
     return []
   }
+}
+
+function promptPlayerDecision (game: GameState, unitId: App.UnitId, afterFrames=1) {
+  game.timeline[unitId] = { type: 'wait', value: afterFrames }
+  game.intents[unitId] = { type: 'passive' }
+}
+
+function unitAt (game: GameState, x: number, y: number) {
+  return Object.keys(game.units).find( id =>
+    game.units[id].pos.x === x && game.units[id].pos.y === y
+  )
+}
+
+function calcDirection (x: number) {
+  return x <= 0 ? 0 : 1
 }

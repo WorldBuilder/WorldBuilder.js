@@ -3,10 +3,12 @@ import { join } from 'path'
 import { TileType } from './enums'
 import * as TOML from 'toml'
 import * as Map from './map'
+import * as ndarray from 'ndarray'
+var createPlanner = require('l1-path-finder')
 
 
+var maps: App.Map[] = []
 export var skills: App.Skill[] = []
-export var maps: App.Map[] = []
 
 
 export function sync () {
@@ -66,6 +68,17 @@ export function sync () {
       throw new Error(`Multiple tilesets not yet supported.`)
     }
 
+    var tileMap = convertTo2d(
+      mapData.width,
+      mapData.height,
+      mapData.layers[0].data.map( tileId => {
+        var spec = mapData.tilesets[0].tiles[tileId]
+        return spec && spec.type === 'wall'
+          ? TileType.Wall
+          : TileType.Empty
+      })
+    )
+
     var map: App.Map = {
       id: file,
       imageUrl: `/assets/maps/${file}.png`,
@@ -74,16 +87,7 @@ export function sync () {
 
       tileSize: mapData.tilewidth,
       tileMapCols: mapData.tilesets[0].columns,
-
-      tiles: convertTo2d(mapData.width, mapData.height,
-
-        mapData.layers[0].data.map( tileId => {
-          var spec = mapData.tilesets[0].tiles[tileId]
-          return spec && spec.type === 'wall'
-            ? TileType.Wall
-            : TileType.Empty
-        })
-      )
+      tiles: tileMap,
     }
 
     return map
@@ -102,6 +106,17 @@ export function sync () {
   }
 }
 
+export function loadMap (id: string) {
+  var map = maps.find( m => m.id === id )
+  if ( ! map ) {
+    throw new Error(`No such map: ${id}`)
+  }
+  var mapPlus: App.MapWithPlanner = {
+    ...map,
+    planner: createPlanner( ndarray(map.tiles, [map.height, map.width]) )
+  }
+  return mapPlus
+}
 
 function convertTo2d<T>(width: number, height: number, array: T[]) {
   var result: T[][] = []

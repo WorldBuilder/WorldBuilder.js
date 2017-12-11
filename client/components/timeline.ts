@@ -41,7 +41,7 @@ export default {
 
         var offset = pos.type === 'wait'
           ? (1 - pos.value / max) * timelineWaitWidth || 0
-          : timelineWaitWidth + (pos.step / pos.limit * actWidth)
+          : timelineWaitWidth + (pos.current / pos.target * actWidth)
 
         var style = {
           transform: `translateX(${ offset + padding }px)`,

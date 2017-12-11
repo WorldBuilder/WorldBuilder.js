@@ -71,16 +71,14 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
   - [ ] Implement fog of war
   - [ ] Draw orange highlight on targeted units
 - [x] Battle Timeline Loop
-  - [x] Move units down the timeline based on their stats
   - [x] Pause when it's a player's turn to decide on an action
-  - [x] When a skill is done, set back unit on the timeline towards the beginning
-  - [x] When attacking, move unit towards target and stike when in range
-  - [ ] Calculate setback based on battle decision
+  - [ ] Implement movement as an action (with pathfinding)
+  - [ ] When a skill is done, set back unit on the timeline based on the skill's cooldown
   - [ ] Implement basic attack animation
   - [ ] Implement pausing for certain animations (skills, etc.)
 - [x] Foundation for making battle decisions (skills, items, etc.)
 - [x] Implement skill system
-  - [x] Implement "single-target" skill target type
+  - [ ] Implement "single-target" skill target type
   - [ ] Implement "radius" (area of effect) skill target type
   - [ ] Implement "cancel" skill effect
 - [ ] Implement items

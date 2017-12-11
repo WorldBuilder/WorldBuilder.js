@@ -24,7 +24,7 @@ export default {
         var shouldPrompt = uPlayer && uPlayer.id === unitId
                         || Game.isDM && unit.type !== 'player'
 
-        return m('.unit-stats', Game.focus(unit.id), [
+        return m('.unit-stats', Game.unitFocus(unit.id), [
           renderStats(unit),
           pd && m(DecisionPrompt, { game, unitId, pd, prompt: !!shouldPrompt }),
         ])
