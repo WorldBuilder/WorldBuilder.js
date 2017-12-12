@@ -26,7 +26,7 @@ export var initialGameState: GameState = {
       skills: ['melee-attack', 'singe'],
       stats: {
         resilience: 50,
-        movement: 10,
+        movement: 30,
         str: 5,
         mag: 5,
         wis: 1,
@@ -44,7 +44,7 @@ export var initialGameState: GameState = {
       skills: ['melee-attack'],
       stats: {
         resilience: 50,
-        movement: 20,
+        movement: 50,
         str: 5,
         mag: 2,
         wis: 1,
@@ -73,6 +73,7 @@ export var initialGameState: GameState = {
     timelineWaitSize: 30 * 10, // 10 seconds
     fps: 30,
     skills: GameAssets.skills,
+    movementStartup: 6,
   },
 }
 
@@ -125,6 +126,8 @@ export function gameStep (game: GameState): App.Step {
   //
   // Handle timeline ticks
   //
+  var actTimeLeft: Record<App.UnitId, number> = {}
+
   for ( let id in game.timeline ) {
     let pos = game.timeline[id]
 
@@ -153,18 +156,7 @@ export function gameStep (game: GameState): App.Step {
     else if ( pos.type === 'act' ) {
 
       pos.current += 1
-
-      if ( pos.current < pos.target ) {
-        // Unit cannot do anything else while charging up
-        continue
-      }
-      else {
-        // Code flow continues; intent will be handled next.
-
-        // TODO: DELETE
-        // game.timeline[id] = { type: 'wait', value: game.meta.timelineWaitSize }
-        // game.intents[id] = { type: 'passive' }
-      }
+      actTimeLeft[id] = pos.target - pos.current
     }
   }
 
@@ -185,14 +177,22 @@ export function gameStep (game: GameState): App.Step {
     }
     else if ( intent.type === 'move' ) {
 
-      // if ( intent.cooldown > 0 ) {
-      //   intent.cooldown -= 1
-      //   continue
-      // }
-
       if ( intent.target.x === unit.pos.x && intent.target.y === unit.pos.y ) {
         // Unit has reached its destination!
         promptPlayerDecision(game, unit.id)
+        continue
+      }
+
+      //
+      // The purpose of this logic is to make movement have both a startup and cooldown time.
+      // It makes the unit move in the MIDDLE of the act bar, as opposed to the beginning or end.
+      //
+      if ( actTimeLeft[id] === 0 ) {
+        game.timeline[unit.id] = { type: 'act', current: 0, target: game.meta.fps*2 - unit.stats.movement }
+        continue
+      }
+      else if ( actTimeLeft[id] !== game.meta.movementStartup ) {
+        // Movement executes on a specific frame, mid act bar
         continue
       }
 
@@ -223,7 +223,6 @@ export function gameStep (game: GameState): App.Step {
 
       // Move unit one space towards destination
       unit.pos = nextPos
-      game.timeline[unit.id] = { type: 'act', current: 0, target: game.meta.fps*2 - unit.stats.movement }
     }
     else if ( intent.type === 'target-unit' ) {
 

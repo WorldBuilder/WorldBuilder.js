@@ -104,6 +104,7 @@ declare namespace App {
       timelineWaitSize: number,
       fps: number,
       skills: Skill[],
+      movementStartup: number,
     }
   }
 
