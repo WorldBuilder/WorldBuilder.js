@@ -37,15 +37,15 @@ This app is a client/server architecture with syncing game state, so the code ca
 Starting from the user's perspective, when making a decision:
 
 - The [DecisionPrompt](./client/components/battle/decision-prompt.ts) component activates
-- User selects action type (skill or item)
+- User selects action type (skill, item, or move)
   - User selects a skill if needed
-- Game engine displays a list of valid targets based on [getValidTargets](./engine/battle-shared.ts)
-- User selects a target
+- Game engine displays a list of valid targets based on [getValidTargets](./engine/battle-shared.ts), or prompts a point on the map (for movement and certain skills)
+- User selects a target or point
 - The client-side [game model](./client/models/game.ts) sends a message via a websocket to the server using the `act` function
 - The server receives the message via the [`'user-input'`](./server/config/config-websockets.ts) message
 - After validation, the server passes the message to the [game engine](./engine/index.ts) `registerUserInput` method, which just stores it in the game state
 - Dring the next frame, the [game engine](./engine/index.ts) handles the user input within its `step` function
-  - During a battle, this will pass the user input to the [battle engine's](./engine/battle.ts) handleAction function
+  - During a battle, this will pass the user input to the [battle engine's](./engine/battle.ts) `handleAction` function
 - From here, game state is updated, and changes are distributed across all clients via [websocket + multicast](./server/config/config-websockets.ts).
 - Each client receives an updated game state in the [client-side game model](./client/models/game.ts), which simply stores it and redraws the UI.
 - Loop!

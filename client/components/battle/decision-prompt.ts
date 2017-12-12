@@ -128,7 +128,14 @@ function moveView (state: State, attrs: Attrs, choice: MoveChoice) {
   return [
     m('p', "Please select a point on the map."),
     dest &&
-      m('button', { onclick: () => submitMovement(state, attrs, dest) }, `Move to (${dest.x}, ${dest.y})`)
+      m('button', {
+        onclick: () =>
+          Game.act(unit.id, {
+            type: 'decision',
+            pendingDecisionId: attrs.pd.id,
+            action: { type: 'move', target: dest }
+          })
+      }, `Move to (${dest.x}, ${dest.y})`)
     ,
   ]
 }
@@ -147,9 +154,4 @@ function selectAction(state: State, attrs: Attrs, action: App.BattleActionType) 
     state.choice = { type: 'move' }
     Game.mapMode = { type: 'move-point', actorId: unit.id, label: `${unit.name}'s move` }
   }
-}
-
-
-function submitMovement(state: State, attrs: Attrs, dest: App.Coordinate) {
-  // TODO: MODIFY AND INVOKE Game.act()
 }

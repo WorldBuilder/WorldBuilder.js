@@ -18,9 +18,9 @@ function drawGame () {
       renderMapLabel(),
       m('.scroller',
         m(Map, { game })
-      )
+      ),
+      m(Timeline, { game })
     ),
-    m(Timeline, { game })
   )
 }
 

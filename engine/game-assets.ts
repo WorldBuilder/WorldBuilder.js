@@ -111,9 +111,15 @@ export function loadMap (id: string) {
   if ( ! map ) {
     throw new Error(`No such map: ${id}`)
   }
+
+  // Need to flip map diagonally for ndarray library
+  var tilesFlipped = transpose(map.tiles)
+
   var mapPlus: App.MapWithPlanner = {
     ...map,
-    planner: createPlanner( ndarray(map.tiles, [map.height, map.width]) )
+    planner: createPlanner(
+      ndarray(tilesFlipped.reduce((a,b) => a.concat(b)), [tilesFlipped.length, tilesFlipped[0].length])
+    )
   }
   return mapPlus
 }
@@ -125,6 +131,18 @@ function convertTo2d<T>(width: number, height: number, array: T[]) {
     result.push([])
     for (var col=0; col < width; col++) {
       result[row][col] = array[row * width + col]
+    }
+  }
+  return result
+}
+
+
+function transpose<T> (arr: T[][]) {
+  var result: T[][] = []
+  for (var i=0; i < arr[0].length; i++) {
+    result[i] = []
+    for (var k=0; k < arr.length; k++) {
+      result[i][k] = arr[k][i]
     }
   }
   return result

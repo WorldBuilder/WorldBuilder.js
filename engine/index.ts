@@ -22,7 +22,7 @@ export var initialGameState: GameState = {
       size: 25,
       currentHp: 30,
       maxHp: 30,
-      pos: { x: 100, y: 100 },
+      pos: { x: 3, y: 3 },
       skills: ['melee-attack', 'singe'],
       stats: {
         resilience: 50,
@@ -40,7 +40,7 @@ export var initialGameState: GameState = {
       size: 20,
       currentHp: 14,
       maxHp: 20,
-      pos: { x: 300, y: 200 },
+      pos: { x: 10, y: 7 },
       skills: ['melee-attack'],
       stats: {
         resilience: 50,
@@ -53,7 +53,7 @@ export var initialGameState: GameState = {
   },
   timeline: {
     '10': { type: 'wait', value: 45 },
-    '20': { type: 'wait', value: 45 },
+    '20': { type: 'wait', value: 300 },
   },
   retreatPoints: {
     '10': { x: 100, y: 200 },
@@ -199,17 +199,20 @@ export function gameStep (game: GameState): App.Step {
       var path: number[] = []
       var dist = game.map.planner.search(unit.pos.x, unit.pos.y, intent.target.x, intent.target.y, path)
 
-      if ( dist === Infinity ) {
+      if ( ! Number.isFinite(dist) ) {
         effects.push({ type: 'movement-impossible', actorId: unit.id })
         promptPlayerDecision(game, unit.id, 20)
         continue
       }
 
-      var nextPoint = { x: path[0], y: path[1] } // Next end of straight line path
+      // path[0] and path[1] are the current pos of unit
+      // path[2] and path[3] are the end of the next straight line
+      var nextPoint = { x: path[2], y: path[3] }
       var nextPos = {
         x: calcDirection(nextPoint.x - unit.pos.x) + unit.pos.x,
         y: calcDirection(nextPoint.y - unit.pos.y) + unit.pos.y,
       }
+
 
       var blocker = unitAt(game, nextPos.x, nextPos.y)
       if ( blocker ) {
@@ -307,5 +310,6 @@ function unitAt (game: GameState, x: number, y: number) {
 }
 
 function calcDirection (x: number) {
-  return x <= 0 ? 0 : 1
+  if ( x === 0 ) return 0
+  return x < 0 ? -1 : 1
 }

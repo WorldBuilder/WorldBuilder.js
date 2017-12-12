@@ -44,8 +44,9 @@ declare namespace App {
     | { type: 'set-retreat-point', pos: Coordinate }
 
   export type BattleAction
-    = { type: 'skill', skill: SkillId, target: UnitId | { x: number, y: number } }
-    | { type: 'item', target: UnitId | { x: number, y: number } }
+    = { type: 'skill', skill: SkillId, target: UnitId | Coordinate }
+    | { type: 'item', target: UnitId | Coordinate }
+    | { type: 'move', target: Coordinate }
 
   export type BattleActionType = 'skill' | 'item' | 'move'
 
@@ -123,7 +124,7 @@ declare namespace App {
     tileMapCols: number,
     tiles: TileType[][],
     planner: {
-      search: (x1: number, y1: number, x2: number, y2: number, out: number[]) => number
+      search: (x1: number, y1: number, x2: number, y2: number, out?: number[]) => number
     },
     tileSize: number,
     width: number,
@@ -149,6 +150,11 @@ declare namespace App {
         actorId: UnitId,
         targetId: UnitId,
         skillName: string,
+      }
+    | {
+        type: 'battle:decision:move:target',
+        actorId: UnitId,
+        target: Coordinate,
       }
     | {
         type: 'battle:hp',

@@ -46,7 +46,7 @@ function renderUnit (game: App.GameState, unit: App.Unit) {
   var unitSize = unit.size * 1 // unit.size is radius
 
   var style = {
-    transform: `translate(${ pos.x }px, ${ pos.y }px)`,
+    transform: `translate(${ pos.x * game.map.tileSize }px, ${ pos.y * game.map.tileSize }px)`,
     width: unitSize + 'px',
     height: unitSize + 'px',
     lineHeight: unitSize + 'px',

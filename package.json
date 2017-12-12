@@ -6,7 +6,7 @@
   "scripts": {
     "start": "./node_modules/.bin/ts-node server/",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --watch './**/*.ts' --ignore 'node_modules' --exec 'ts-node' server/"
+    "dev": "ts-node server/"
   },
   "engines": {
     "node": "8.9.3"

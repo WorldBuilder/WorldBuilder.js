@@ -15,6 +15,8 @@ export * from './battle-shared'
 
 export function handleAction(game: GameState, actorId: UnitId, action: BattleAction): Effect[] {
 
+  console.log("Handling action", action)
+
   if ( action.type === 'skill' ) {
 
     var skill = game.meta.skills.find( s => s.name === action.skill )
@@ -40,6 +42,24 @@ export function handleAction(game: GameState, actorId: UnitId, action: BattleAct
     }
     else if ( skill.target.type === 'radius' ) {
       // TODO: Handle AoE skills
+    }
+  }
+  else if ( action.type === 'move' ) {
+    var mover = game.units[actorId]
+    console.log('from', mover.pos, 'to', action.target)
+    var distance = game.map.planner.search(mover.pos.x, mover.pos.y, action.target.x, action.target.y)
+    console.log("Distance", distance)
+
+    if ( ! Number.isFinite(distance) ) {
+      return [{ type: 'invalid-action', message: `Invalid movement target` }]
+    }
+    else {
+      game.intents[actorId] = { type: 'move', target: action.target }
+      delete game.pendingDecisions[actorId]
+
+      game.timeline[actorId] = { type: 'act', current: 0, target: game.meta.fps*2 - mover.stats.movement }
+
+      return [{ type: 'battle:decision:move:target', actorId: actorId, target: action.target }]
     }
   }
 
