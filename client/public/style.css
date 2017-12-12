@@ -16,16 +16,15 @@ body {
   height: 100vh;
   display: grid;
   overflow: hidden;
-  grid-template-rows: 1fr 80px;
+  grid-template-rows: 1fr;
   grid-template-columns: 300px 1fr;
-  grid-template-areas:
-    "sidebar main"
-    "sidebar timeline";
+  grid-template-areas: "sidebar main";
 }
 
 .sidebar {
   grid-area: sidebar;
   background: #ccc;
+  overflow: auto;
 }
 
 
@@ -42,6 +41,8 @@ body {
     linear-gradient(45deg, transparent 75%, #ccc 75%),
     linear-gradient(-45deg, transparent 75%, #ccc 75%);
   background-size: 25px 25px;
+  display: flex;
+  flex-direction: column;
   grid-area: main;
   position: relative;
 }
@@ -58,9 +59,8 @@ body {
 }
 
 .main > .scroller {
-  height: 100%;
   overflow: auto;
-  width: 100%;
+  flex: 1;
 }
 
 .map .scroll-padding-hack {
@@ -97,9 +97,9 @@ body {
  * Timeline
  */
 .timeline {
-  grid-area: timeline;
   background: #f4f4f4;
   position: relative;
+  height: 80px;
 }
 
 
