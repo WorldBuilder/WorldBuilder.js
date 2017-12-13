@@ -187,9 +187,9 @@ declare namespace App {
     range: number,
     cost: number,
     time: {
-      startup: number,  // Amount of time spent changing up before using skill
-      cooldown: number, // Amount of extra cooldown time after using skill
-      recharge: number, // Amount of time before skill is available to use again
+      startup: number,  // Number of seconds spent changing up before using skill
+      cooldown: number, // Number of seconds of extra cooldown time after using skill
+      recharge: number, // Number of seconds before skill is available to use again
     },
     target: SkillTarget,
     effects: SkillEffect[],
