@@ -57,7 +57,7 @@ function renderUnit (game: App.GameState, unit: App.Unit) {
     current: { width: `${unit.currentHp / unit.maxHp * 100}%` },
   }
 
-  return m('.unit', Game.unitFocus(unit.id, { style: style, class: unit.type }),
+  return m('.unit', Game.unitFocus(['stats', 'target'], ['stats'], unit.id, { style: style, class: unit.type }),
 
     m('.bar-max', { style: hp.max }, m('.bar', { style: hp.current })),
 

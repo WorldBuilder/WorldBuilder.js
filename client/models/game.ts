@@ -80,14 +80,24 @@ export default {
   //
   // UI Helpers
   //
-  unitFocus (unitId: App.UnitId, obj?: any) {
+  unitFocus (readTypes: string[], writeTypes: string[], unitId: App.UnitId, obj?: any) {
     obj = obj || {}
     obj['data-id'] = unitId
+    obj['data-write-types'] = writeTypes.join(';;')
     obj.onmouseenter = onmouseenter
     obj.onmouseleave = onmouseleave
 
     var className = obj.class || ''
-    obj.class = (selectedUnitId === unitId) ? `${className} focused` : className
+
+    var readTypes = Object.keys(selectedUnitIds)
+    for (var i=0; i < readTypes.length; i++) {
+      var type = readTypes[i]
+      if ( selectedUnitIds[type] === unitId ) {
+        className += ' focus--' + type
+      }
+    }
+
+   obj.class = className
     return obj
   },
 }
@@ -95,13 +105,19 @@ export default {
 //
 // UI helpers
 //
-var selectedUnitId: null | App.UnitId = null
+var selectedUnitIds: Record<string, App.UnitId> = {}
 
 function onmouseenter (e: any) {
-  selectedUnitId = e.target.dataset.id
+  var types = e.target.dataset.writeTypes.split(';;')
+  for (var i=0; i < types.length; i++) {
+    selectedUnitIds[ types[i] ] = e.target.dataset.id
+  }
 }
 function onmouseleave (e: any) {
-  if ( selectedUnitId === e.target.dataset.id ) {
-    selectedUnitId = null
+  var types = e.target.dataset.writeTypes.split(';;')
+  for (var i=0; i < types.length; i++) {
+    if ( selectedUnitIds[ types[i] ] === e.target.dataset.id ) {
+      delete selectedUnitIds[ types[i] ]
+    }
   }
 }

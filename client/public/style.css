@@ -1,5 +1,6 @@
 :root {
-  --focused-color: hsla(202, 74%, 50%, 1);
+  --focus-stats-color: hsla(202, 74%, 50%, 1);
+  --focus-target-color: orange;
   --map-padding: 100px;
 }
 
@@ -80,8 +81,11 @@ body {
   text-align: center;
   transition: transform 0.25s cubic-bezier(0.09, 0.93, 0.71, 1.1);
 }
-  .map > .unit.focused {
-    border-color: var(--focused-color);
+  .map > .unit.focus--stats {
+    border-color: var(--focus-stats-color);
+  }
+  .map > .unit.focus--target {
+    border-color: var(--focus-target-color);
   }
 .map > .unit .bar-max {
   background: #a00;
@@ -137,8 +141,11 @@ body {
   margin: 0.9rem;
   padding: 1rem;
 }
-.unit-stats.focused {
-  border-color: var(--focused-color);
+.unit-stats.focus--stats {
+  border-color: var(--focus-stats-color);
+}
+.unit-stats.focus--target {
+  border-color: var(--focus-target-color);
 }
 .unit-stats h3 {
   margin: 0 0 0.25rem;
@@ -169,8 +176,12 @@ body {
   border: 2px solid transparent;
   cursor: pointer;
 }
-.decision-prompt .options li.active {
-  border-color: var(--focused-color);
+.decision-prompt .options li.active,
+.decision-prompt .options li.active:hover {
+  background-color: hsla(202, 84%, 90%, 1);
+}
+.decision-prompt .options li.focus--target {
+  border-color: var(--focus-target-color);
 }
 .decision-prompt .options li:hover {
   background: white;

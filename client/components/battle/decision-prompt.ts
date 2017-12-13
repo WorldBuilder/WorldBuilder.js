@@ -105,14 +105,14 @@ function skillView (state: State, attrs: Attrs, choice: SkillChoice) {
       ,
 
       m('ul.options', targets.map( targetId => {
-        return m('li', {
+        return m('li', Game.unitFocus(['target'], ['target'], targetId, {
           onclick: () =>
             Game.act(unit.id, {
               type: 'decision',
               pendingDecisionId: attrs.pd.id,
               action: { type: 'skill', skill: skill, target: targetId }
             })
-        }, `${ choice.skill }: ${Game.get(targetId).name}`)
+        }), `${ choice.skill }: ${Game.get(targetId).name}`)
       }))
     ]
     //
