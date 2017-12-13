@@ -75,7 +75,7 @@ function handleSingleTargetSkill (game: GameState, actorId: UnitId, skill: Skill
   delete game.pendingDecisions[actorId]
 
   if ( game.mode === 'battle' ) {
-    game.timeline[actorId] = { type: 'act', current: 0, target: game.meta.fps * (skill.time.limit) }
+    game.timeline[actorId] = { type: 'act', current: 0, target: game.meta.fps * (skill.time.startup) }
   }
 
   return [{ type: 'battle:decision:skill:target', actorId: actorId, targetId: target.id, skillName: skill.name }]

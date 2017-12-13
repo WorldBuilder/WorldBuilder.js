@@ -74,6 +74,7 @@ export var initialGameState: GameState = {
     fps: 30,
     skills: GameAssets.skills,
     movementStartup: 6,
+    baseCooldown: 60,
   },
 }
 
@@ -250,7 +251,7 @@ export function gameStep (game: GameState): App.Step {
         //
         // The skill has been performed; we're done (for now).
         //
-        game.timeline[id] = { type: 'wait', value: game.meta.timelineWaitSize }
+        game.timeline[id] = { type: 'wait', value: game.meta.baseCooldown + skill.time.cooldown*game.meta.fps }
         game.intents[id] = { type: 'passive' }
       }
       else {

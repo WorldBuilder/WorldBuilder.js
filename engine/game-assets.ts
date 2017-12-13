@@ -24,11 +24,11 @@ export function sync () {
     var imported: App.Skill = {
       name: sk.name,
       range: sk.range || 100,
-      cost: sk.cost || {},
+      cost: sk.cost || 0,
       time: {
-        chargeup: sk.time.chargeup || 0,
+        startup: sk.time.startup || 0.5,
         cooldown: sk.time.cooldown || 0,
-        limit: sk.time.limit || 4,
+        recharge: sk.time.recharge || 0,
       },
       target: sk.target, // TODO: Validate
       effects: sk.effect || [] // TODO: Validate

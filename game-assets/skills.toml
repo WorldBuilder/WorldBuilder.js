@@ -4,9 +4,9 @@ name = "melee-attack"
 description = """
   Nothing feels better than a good old punch in the face.
 """
-range = 5
-cost = {}
-time = { limit = 4 }
+range = 1
+cost = 0
+time = { startup = 0.5, cooldown = 0.5, recharge = 1 }
 target = { type = "single", valid = "enemy" }
 
 [[skill.effect]]
@@ -19,11 +19,11 @@ scale = { str = 1 }
 [[skill]]
 name = "singe"
 description = """
-  Singe your enemy with a quick magic attack.
+  Singe your enemy with a quick magic strike.
 """
-range = 300
-cost = { mp = 4 }
-time = { chargeup = 0.25 }
+range = 2
+cost = 0
+time = { startup = 0.25, cooldown = 0, recharge = 4 }
 target = { type = "single", valid = "enemy" }
 
 [[skill.effect]]
@@ -38,15 +38,15 @@ name = "fumes"
 description = """
   Cause blindness in an area of effect.
 """
-range = 400
-cost = { mp = 4 }
-time = { chargeup = 0.5, cooldown = 1 }
+range = 4
+cost = 0
+time = { startup = 0.5, cooldown = 1, recharge = 12 }
 target = { type = "radius", size = 50, affects = "all" }
 
 [[skill.effect]]
 type = "blind"
 amount = 0.25
-duration = 10
+duration = 8
 
 
 
@@ -55,9 +55,9 @@ name = "mend"
 description = """
   Mend a bit of health of one of your allies.
 """
-range = 600
-cost = { mp = 4 }
-time = { chargeup = 0.5, cooldown = 0.5 }
+range = 6
+cost = 0
+time = { startup = 0.5, cooldown = 0.5, recharge = 5 }
 target = { type = "single", valid = "ally" }
 
 [[skill.effect]]

@@ -105,6 +105,7 @@ declare namespace App {
       fps: number,
       skills: Skill[],
       movementStartup: number,
+      baseCooldown: number,
     }
   }
 
@@ -184,14 +185,11 @@ declare namespace App {
   export interface Skill {
     name: SkillId,
     range: number,
-    cost: {
-      mp?: number,
-      sp?: number,
-    },
+    cost: number,
     time: {
-      chargeup: number,
-      cooldown: number,
-      limit: number,
+      startup: number,  // Amount of time spent changing up before using skill
+      cooldown: number, // Amount of extra cooldown time after using skill
+      recharge: number, // Amount of time before skill is available to use again
     },
     target: SkillTarget,
     effects: SkillEffect[],
