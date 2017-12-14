@@ -27,16 +27,18 @@ declare namespace App {
   export type Player = { type: 'player' } & UnitBase
   export type Enemy  = { type: 'enemy', aiType: null | string } & UnitBase
 
-  type TimelinePos
+  type TimelinePosWait
     = {
         type: 'wait',
         value: number, // 0 is decision time
       }
-    | {
+  type TimelinePosAct
+    = {
         type: 'act',
         current: number, // This increments once per frame
         target: number, // The limit to reach before performing the action
       }
+  type TimelinePos = TimelinePosWait | TimelinePosAct
   type Timeline = Record<UnitId, TimelinePos>
 
   export type UserInput

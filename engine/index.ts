@@ -127,7 +127,7 @@ export function gameStep (game: GameState): App.Step {
   //
   // Handle timeline ticks
   //
-  var actTimeLeft: Record<App.UnitId, number> = {}
+  var actTime: Record<App.UnitId, App.TimelinePosAct> = {}
 
   for ( let id in game.timeline ) {
     let pos = game.timeline[id]
@@ -155,9 +155,8 @@ export function gameStep (game: GameState): App.Step {
       }
     }
     else if ( pos.type === 'act' ) {
-
       pos.current += 1
-      actTimeLeft[id] = pos.target - pos.current
+      actTime[id] = pos
     }
   }
 
@@ -188,11 +187,15 @@ export function gameStep (game: GameState): App.Step {
       // The purpose of this logic is to make movement have both a startup and cooldown time.
       // It makes the unit move in the MIDDLE of the act bar, as opposed to the beginning or end.
       //
-      if ( actTimeLeft[id] === 0 ) {
+      var time = actTime[id]
+      var timeLeft = time.target - time.current
+      var isMovementFrame = time.current === game.meta.movementStartup
+
+      if ( timeLeft === 0 ) {
         game.timeline[unit.id] = { type: 'act', current: 0, target: game.meta.fps*2 - unit.stats.movement }
         continue
       }
-      else if ( actTimeLeft[id] !== game.meta.movementStartup ) {
+      else if ( ! isMovementFrame ) {
         // Movement executes on a specific frame, mid act bar
         continue
       }
