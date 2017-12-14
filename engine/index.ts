@@ -164,7 +164,14 @@ export function gameStep (game: GameState): App.Step {
   // Handle active intents
   //
   for ( let id in game.intents ) {
+    const time = actTime[id]
     const intent = game.intents[id]
+
+    if ( ! time ) {
+      // Unit is not acting; they are waiting.
+      // Whatever their intent is, it's gotta wait.
+      continue
+    }
 
     let unit = game.units[id]
     if ( ! unit ) {
@@ -187,7 +194,6 @@ export function gameStep (game: GameState): App.Step {
       // The purpose of this logic is to make movement have both a startup and cooldown time.
       // It makes the unit move in the MIDDLE of the act bar, as opposed to the beginning or end.
       //
-      var time = actTime[id]
       var timeLeft = time.target - time.current
       var isMovementFrame = time.current === game.meta.movementStartup
 
