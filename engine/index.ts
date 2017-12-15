@@ -23,7 +23,7 @@ export var initialGameState: GameState = {
       currentHp: 30,
       maxHp: 30,
       pos: { x: 3, y: 3 },
-      skills: ['melee-attack', 'singe'],
+      skills: ['melee-attack', 'singe', 'wind-up-punch'],
       stats: {
         resilience: 50,
         movement: 30,
@@ -40,8 +40,8 @@ export var initialGameState: GameState = {
       size: 20,
       currentHp: 14,
       maxHp: 20,
-      pos: { x: 10, y: 7 },
-      skills: ['melee-attack'],
+      pos: { x: 3, y: 4 },
+      skills: ['melee-attack', 'wind-up-punch'],
       stats: {
         resilience: 50,
         movement: 50,
@@ -52,8 +52,8 @@ export var initialGameState: GameState = {
     }
   },
   timeline: {
-    '10': { type: 'wait', value: 45 },
-    '20': { type: 'wait', value: 300 },
+    '10': { type: 'wait', value: 60 },
+    '20': { type: 'wait', value: 3 },
   },
   retreatPoints: {
     '10': { x: 100, y: 200 },
@@ -306,6 +306,19 @@ function applySkillEffect (game: GameState, actor: Unit, target: Unit, effect: S
     target.currentHp = Math.max(target.currentHp - damage, 0)
 
     return [{ type: 'battle:hp', actorId: actor.id, targetId: target.id, mod: 0-damage }]
+  }
+  else if ( effect.type === 'setback' ) {
+    var time = game.timeline[target.id]
+
+    if ( time.type === 'act' && time.current < time.target ) {
+      // Target got hit by skill while charging up! Ouch!
+      var setback = effect.amount * game.meta.fps
+      time.current = Math.max(0, time.current - setback)
+      return [{ type: 'battle:setback', actorId: actor.id, targetId: target.id, amount: setback }]
+    }
+    else {
+      return []
+    }
   }
   else {
     return []

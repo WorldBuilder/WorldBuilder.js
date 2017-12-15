@@ -5,7 +5,6 @@ description = """
   Nothing feels better than a good old punch in the face.
 """
 range = 1
-cost = 0
 time = { startup = 0.5, cooldown = 0.5, recharge = 1 }
 target = { type = "single", valid = "enemy" }
 
@@ -13,6 +12,30 @@ target = { type = "single", valid = "enemy" }
 type = "damage"
 amount = 2
 scale = { str = 1 }
+
+[[skill.effect]]
+type = "setback"
+amount = 1.5
+
+
+
+[[skill]]
+name = "wind-up-punch"
+description = """
+  Time to charge, baby.
+"""
+range = 1
+time = { startup = 8, cooldown = 0, recharge = 0 }
+target = { type = "single", valid = "enemy" }
+
+[[skill.effect]]
+type = "damage"
+amount = 20
+scale = { str = 1 }
+
+[[skill.effect]]
+type = "setback"
+amount = 10
 
 
 
@@ -22,7 +45,6 @@ description = """
   Singe your enemy with a quick magic strike.
 """
 range = 2
-cost = 0
 time = { startup = 0.25, cooldown = 0, recharge = 4 }
 target = { type = "single", valid = "enemy" }
 
@@ -30,6 +52,10 @@ target = { type = "single", valid = "enemy" }
 type = "damage"
 amount = 2
 scale = { mag = 1 }
+
+[[skill.effect]]
+type = "setback"
+amount = 0.5
 
 
 
@@ -39,7 +65,6 @@ description = """
   Cause blindness in an area of effect.
 """
 range = 4
-cost = 0
 time = { startup = 0.5, cooldown = 1, recharge = 12 }
 target = { type = "radius", size = 50, affects = "all" }
 
@@ -56,7 +81,6 @@ description = """
   Mend a bit of health of one of your allies.
 """
 range = 6
-cost = 0
 time = { startup = 0.5, cooldown = 0.5, recharge = 5 }
 target = { type = "single", valid = "ally" }
 

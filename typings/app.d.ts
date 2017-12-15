@@ -167,6 +167,12 @@ declare namespace App {
         mod: number, // negative for damage, positive for heal, zero for miss.
       }
     | {
+        type: 'battle:setback',
+        actorId: UnitId,
+        targetId: UnitId,
+        amount: number,
+      }
+    | {
         type: 'movement-blocked',
         actorId: UnitId,
         blockPos: Coordinate,
@@ -204,8 +210,9 @@ declare namespace App {
 
 
   export type SkillEffect
-    = { type: 'damage', amount: number, scale: Record<keyof UnitStats, number> }
-    | { type: 'blind', amount: number, duration: number }
+    = { type: 'damage',  amount: number, scale: Record<keyof UnitStats, number> }
+    | { type: 'setback', amount: number }
+    | { type: 'blind',   amount: number, duration: number }
 
   type DamageType = 'physical' | 'spell'
 
