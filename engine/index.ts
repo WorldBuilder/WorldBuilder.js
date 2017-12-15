@@ -236,6 +236,11 @@ export function gameStep (game: GameState): App.Step {
     }
     else if ( intent.type === 'target-unit' ) {
 
+      if ( time.current < time.target ) {
+        // Unit is still charging up
+        continue
+      }
+
       let target = game.units[intent.target]
       if ( ! target ) {
         console.warn('No such target:', intent.target)
