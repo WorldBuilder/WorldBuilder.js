@@ -109,7 +109,6 @@ export default {
   signOut() {
     userPlayer = null
     isDM = false
-    localStorage.removeItem('session:id')
     localStorage.removeItem('session:password')
     socket.close()
     socket.open()
