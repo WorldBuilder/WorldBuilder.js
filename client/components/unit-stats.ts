@@ -22,7 +22,7 @@ export default {
         var unit = game.units[unitId]
 
         var shouldPrompt = uPlayer && uPlayer.id === unitId
-                        || Game.isDM && unit.type !== 'player'
+                        || Game.isDM // && unit.type !== 'player'
 
         return m('.unit-stats', Game.unitFocus(['stats', 'target'], ['stats'], unit.id), [
           renderStats(unit),
