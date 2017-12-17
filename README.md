@@ -58,17 +58,17 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
 - [x] Server-client data syncing
   - [ ] Optimize data sent over the wire
   - [ ] Occasionally save gamestate to disk on server-side
-- [ ] User Authentication
-  - [ ] Allow DM to specify usernames & passwords in a [TOML](https://github.com/toml-lang/toml) file
+  - [ ] Watch for TOML file changes and update server state accordingly
+- [x] User Authentication
+  - [x] Allow DM to specify usernames & passwords in a [TOML](https://github.com/toml-lang/toml) file
 - [x] Render map with existing units
   - [x] Render health bars
   - [ ] Render a DM-defined image as background
-  - [ ] Render terrain / walls definitons in map data
-  - [ ] Collision detection for terrain / walls
-  - [ ] Show animation when setting retreat point
+  - [x] Render terrain / walls definitons in map data
+  - [x] Collision detection for terrain / walls
   - [ ] Draw intent path for user player
   - [ ] Implement fog of war
-  - [ ] Draw orange highlight on targeted units
+  - [x] Draw orange highlight on targeted units
 - [x] Battle Timeline Loop
   - [x] Pause when it's a player's turn to decide on an action
   - [x] Implement movement as an action (with pathfinding)
@@ -77,9 +77,9 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
   - [ ] Implement timeline pausing for certain skill / item animations
 - [x] Foundation for making battle decisions (skills, items, etc.)
 - [x] Implement skill system
-  - [ ] Implement "single-target" skill target type
+  - [x] Implement "single-target" skill target type
   - [ ] Implement "radius" (area of effect) skill target type
-  - [ ] Implement "cancel" skill effect
+  - [x] Implement "cancel" skill effect
 - [ ] Implement items
   - [ ] Implement item inventory
   - [ ] Implement item usage during battle
@@ -89,8 +89,8 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
   - [ ] Render chat bubbles
 - [ ] Build DM Dashboard
   - [x] Allow DM to specify skills using a [TOML](https://github.com/toml-lang/toml) file
-  - [ ] Allow DM to specify enemies and stats using a [TOML](https://github.com/toml-lang/toml) file
-  - [ ] Allow DM to manually control where enemies move
+  - [ ] Allow DM to define enemy templates using a [TOML](https://github.com/toml-lang/toml) file
+  - [x] Allow DM to manually control where enemies move
   - [ ] Allow DM to spawn and manipulate enemies
 - [ ] Implement cinematic mode
   - [ ] Pause all player activity
