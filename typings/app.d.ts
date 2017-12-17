@@ -4,7 +4,6 @@ declare namespace App {
   export type SkillId = string
 
   interface UnitBase {
-    id: UnitId,
     name: string,
     size: number,
     pos: Coordinate,
@@ -15,17 +14,18 @@ declare namespace App {
   }
 
   interface UnitStats {
-    resilience: number,
-    movement: number,
+    con: number,
+    dex: number,
+    int: number,
+    mov: number,
     str: number,
-    mag: number,
     wis: number,
   }
 
 
   export type Unit = Player | Enemy
-  export type Player = { type: 'player' } & UnitBase
-  export type Enemy  = { type: 'enemy', aiType: null | string } & UnitBase
+  export type Player = { id: UnitId, type: 'player', password: string } & UnitBase
+  export type Enemy  = { id: UnitId, type: 'enemy', aiType: null | string } & UnitBase
 
   type TimelinePosWait
     = {

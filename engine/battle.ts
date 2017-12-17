@@ -60,7 +60,7 @@ export function handleAction(game: GameState, actorId: UnitId, action: BattleAct
       game.timeline[actorId] = {
         type: 'act',
         current: 0,
-        target: Math.max(game.meta.fps*2 - mover.stats.movement, game.meta.movementStartup+1),
+        target: Math.max(game.meta.fps*2 - mover.stats.mov, game.meta.movementStartup+1),
       }
 
       return [{ type: 'battle:decision:move:target', actorId: actorId, target: action.target }]

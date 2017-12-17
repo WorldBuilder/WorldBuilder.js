@@ -4,11 +4,13 @@ import { TileType } from './enums'
 import * as TOML from 'toml'
 import * as Map from './map'
 import * as ndarray from 'ndarray'
+import * as t from 'runtypes'
 var createPlanner = require('l1-path-finder')
 
 
 var maps: App.Map[] = []
 export var skills: App.Skill[] = []
+export var players: App.Player[] = []
 
 
 export function sync () {
@@ -35,6 +37,30 @@ export function sync () {
     }
 
     return imported
+  })
+
+
+  console.log('[Startup] Loading player accounts...')
+  var source = readFileSync(__dirname + '/../game-assets/players.toml', 'utf8')
+  var importedPlayers = TOML.parse(source)
+
+  players = importedPlayers.player.map( (p: any) => {
+    try {
+      console.log('  > Loading', p.id)
+      var clean = PlayerChecker.check(p)
+    }
+    catch (error) {
+      console.error('ERROR: Invalid player definition in game-assets/players.toml')
+      console.error('  ', error.message)
+      return process.exit(1) // ts doesn't know process.exit quits, so we return to appease.
+    }
+
+    var final: App.Player = {
+      ...clean,
+      type: 'player',
+    }
+
+    return final
   })
 
 
@@ -124,6 +150,9 @@ export function loadMap (id: string) {
   return mapPlus
 }
 
+//
+// Helpers
+//
 function convertTo2d<T>(width: number, height: number, array: T[]) {
   var result: T[][] = []
 
@@ -136,7 +165,6 @@ function convertTo2d<T>(width: number, height: number, array: T[]) {
   return result
 }
 
-
 function transpose<T> (arr: T[][]) {
   var result: T[][] = []
   for (var i=0; i < arr[0].length; i++) {
@@ -147,3 +175,24 @@ function transpose<T> (arr: T[][]) {
   }
   return result
 }
+
+// THIS SHOULD MIRROR THAT IN typings/app.d.ts!!
+const PlayerChecker = t.Record({
+  id: t.String,
+  password: t.String,
+
+  name: t.String,
+  size: t.Number,
+  pos: t.Record({ x: t.Number, y: t.Number }),
+  currentHp: t.Number,
+  maxHp: t.Number,
+  stats: t.Record({
+    con: t.Number,
+    dex: t.Number,
+    int: t.Number,
+    mov: t.Number,
+    str: t.Number,
+    wis: t.Number,
+  }),
+  skills: t.Array(t.String),
+})

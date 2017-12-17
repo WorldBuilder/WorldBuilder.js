@@ -15,27 +15,10 @@ export var initialGameState: GameState = {
   mode: 'battle',
   map: GameAssets.loadMap('example'),
   units: {
-    '10': {
-      id: '10',
-      type: 'player',
-      name: 'Alice',
-      size: 25,
-      currentHp: 30,
-      maxHp: 30,
-      pos: { x: 3, y: 3 },
-      skills: ['melee-attack', 'singe', 'wind-up-punch'],
-      stats: {
-        resilience: 50,
-        movement: 30,
-        str: 5,
-        mag: 5,
-        wis: 1,
-      }
-    },
-    '20': {
+    'gob_1': {
       aiType: 'passive',
       type: 'enemy',
-      id: '20',
+      id: 'gob_1',
       name: 'Goblin',
       size: 20,
       currentHp: 14,
@@ -43,24 +26,23 @@ export var initialGameState: GameState = {
       pos: { x: 3, y: 4 },
       skills: ['melee-attack', 'wind-up-punch'],
       stats: {
-        resilience: 50,
-        movement: 50,
-        str: 5,
-        mag: 2,
-        wis: 1,
+        con: 10,
+        dex: 14,
+        int: 10,
+        mov: 35,
+        str: 11,
+        wis: 10,
       }
     }
   },
   timeline: {
-    '10': { type: 'wait', value: 60 },
-    '20': { type: 'wait', value: 3 },
+    'gob_1': { type: 'wait', value: 60 },
   },
 
   pendingDecisions: {},
 
   intents: {
-    '10': { type: 'passive' },
-    '20': { type: 'passive' },
+    'gob_1': { type: 'passive' },
   },
 
   inputs: {},
@@ -73,6 +55,17 @@ export var initialGameState: GameState = {
     baseCooldown: 60,
   },
 }
+
+//
+// Inject players into game state
+//
+GameAssets.players.forEach( player => {
+  initialGameState.units[player.id] = player
+  initialGameState.timeline[player.id] = { type: 'wait', value: 25 + Math.round(Math.random()*100) }
+  initialGameState.intents[player.id] = { type: 'passive' }
+})
+
+
 
 var idCounter = 1
 
@@ -189,7 +182,7 @@ export function gameStep (game: GameState): App.Step {
       var isMovementFrame = time.current === game.meta.movementStartup
 
       if ( timeLeft === 0 ) {
-        game.timeline[unit.id] = { type: 'act', current: 0, target: game.meta.fps*2 - unit.stats.movement }
+        game.timeline[unit.id] = { type: 'act', current: 0, target: game.meta.fps*2 - unit.stats.mov }
         continue
       }
       else if ( ! isMovementFrame ) {

@@ -23,7 +23,7 @@ export default function configWebsockets (server: Server) {
     // TODO: Calculate based on auth
 
     var isDM = false
-    var userPlayer = Game.state.units['10']
+    var userPlayer = Game.state.units['alice']
     socket.emit('userPlayer', userPlayer)
 
     // TODO: flag only on correct password event
