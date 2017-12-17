@@ -55,10 +55,6 @@ export var initialGameState: GameState = {
     '10': { type: 'wait', value: 60 },
     '20': { type: 'wait', value: 3 },
   },
-  retreatPoints: {
-    '10': { x: 100, y: 200 },
-    '20': { x: 300, y: 150 },
-  },
 
   pendingDecisions: {},
 
@@ -109,11 +105,6 @@ export function gameStep (game: GameState): App.Step {
     ) {
       var battleEffects = Battle.handleAction(game, id, input.action)
       effects = effects.concat(battleEffects)
-    }
-
-    else if ( input.type === 'set-retreat-point' ) {
-      game.retreatPoints[id] = input.pos
-      effects.push({ type: 'retreat-point', actorId: id, pos: input.pos })
     }
   }
 

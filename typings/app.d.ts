@@ -43,7 +43,6 @@ declare namespace App {
 
   export type UserInput
     = { type: 'decision', pendingDecisionId: string, action: BattleAction }
-    | { type: 'set-retreat-point', pos: Coordinate }
 
   export type BattleAction
     = { type: 'skill', skill: SkillId, target: UnitId | Coordinate }
@@ -86,12 +85,6 @@ declare namespace App {
 
     // number is where they are on timeline
     timeline: Timeline,
-
-    //
-    // This is the point that units will retreat towards
-    // when they have leftover action points during battle.
-    //
-    retreatPoints: Record<UnitId, Coordinate>
 
     //
     // During battle, the game pauses as long as there is a decision to be made.
@@ -180,11 +173,6 @@ declare namespace App {
     | {
         type: 'movement-impossible',
         actorId: UnitId,
-      }
-    | {
-        type: 'retreat-point',
-        actorId: UnitId,
-        pos: Coordinate,
       }
 
   export type Step = { game: GameState, effects: Effect[] }

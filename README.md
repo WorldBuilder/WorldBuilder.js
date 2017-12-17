@@ -67,7 +67,6 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
   - [ ] Collision detection for terrain / walls
   - [ ] Show animation when setting retreat point
   - [ ] Draw intent path for user player
-  - [ ] Draw retreat path for user player during battle
   - [ ] Implement fog of war
   - [ ] Draw orange highlight on targeted units
 - [x] Battle Timeline Loop
