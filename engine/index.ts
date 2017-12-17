@@ -158,7 +158,9 @@ export function gameStep (game: GameState): App.Step {
       continue
     }
 
+    var timeLeft = time.target - time.current
     let unit = game.units[id]
+
     if ( ! unit ) {
       console.warn('No such unit:', id)
       continue
@@ -169,7 +171,7 @@ export function gameStep (game: GameState): App.Step {
     }
     else if ( intent.type === 'move' ) {
 
-      if ( intent.target.x === unit.pos.x && intent.target.y === unit.pos.y ) {
+      if ( intent.target.x === unit.pos.x && intent.target.y === unit.pos.y && timeLeft === 0 ) {
         // Unit has reached its destination!
         promptPlayerDecision(game, unit.id)
         continue
@@ -179,7 +181,6 @@ export function gameStep (game: GameState): App.Step {
       // The purpose of this logic is to make movement have both a startup and cooldown time.
       // It makes the unit move in the MIDDLE of the act bar, as opposed to the beginning or end.
       //
-      var timeLeft = time.target - time.current
       var isMovementFrame = time.current === game.meta.movementStartup
 
       if ( timeLeft === 0 ) {
@@ -221,7 +222,7 @@ export function gameStep (game: GameState): App.Step {
     }
     else if ( intent.type === 'target-unit' ) {
 
-      if ( time.current < time.target ) {
+      if ( timeLeft > 0 ) {
         // Unit is still charging up
         continue
       }
