@@ -167,13 +167,23 @@ declare namespace App {
         amount: number,
       }
     | {
-        type: 'movement-blocked',
+        type: 'skill:oor',
+        actorId: UnitId,
+        skill: SkillId,
+      }
+    | {
+        type: 'movement:blocked',
         actorId: UnitId,
         blockPos: Coordinate,
       }
     | {
-        type: 'movement-impossible',
+        type: 'movement:impossible',
         actorId: UnitId,
+      }
+    | {
+        type: 'sight:blocked',
+        actorId: UnitId,
+        blockPos: Coordinate,
       }
 
   export type Step = { game: GameState, effects: Effect[] }

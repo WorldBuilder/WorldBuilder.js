@@ -1,5 +1,6 @@
 import * as Battle from './battle'
 import * as GameAssets from './game-assets'
+var bline = require('bresenham-line')
 
 type Unit = App.Unit
 type Effect = App.Effect
@@ -196,7 +197,7 @@ export function gameStep (game: GameState): App.Step {
       var dist = game.map.planner.search(unit.pos.x, unit.pos.y, intent.target.x, intent.target.y, path)
 
       if ( ! Number.isFinite(dist) ) {
-        effects.push({ type: 'movement-impossible', actorId: unit.id })
+        effects.push({ type: 'movement:impossible', actorId: unit.id })
         promptPlayerDecision(game, unit.id, 20)
         continue
       }
@@ -212,7 +213,7 @@ export function gameStep (game: GameState): App.Step {
 
       var blocker = unitAt(game, nextPos.x, nextPos.y)
       if ( blocker ) {
-        effects.push({ type: 'movement-blocked', actorId: unit.id, blockPos: nextPos })
+        effects.push({ type: 'movement:blocked', actorId: unit.id, blockPos: nextPos })
         promptPlayerDecision(game, unit.id, 30)
         continue
       }
@@ -239,9 +240,29 @@ export function gameStep (game: GameState): App.Step {
       let dir = { x: target.pos.x - unit.pos.x, y: target.pos.y - unit.pos.y }
       let distance = Math.sqrt(dir.x*dir.x + dir.y*dir.y)
 
-      if ( distance <= (target.size + unit.size + skill.range) ) {
+      if ( distance <= skill.range ) {
         //
-        // Target is within range of skill
+        // Target is within range of skill.
+        // Check line of sight.
+        //
+        var lineOfSight = bline(unit.pos, target.pos)
+        var blockerId: App.UnitId | null = null
+
+        for (let point of lineOfSight) {
+          blockerId = unitAt(game, point.x, point.y)
+        }
+
+        //
+        // TODO: Only block for certain types of skills
+        //
+        if ( blockerId && blockerId !== target.id ) {
+          effects.push({ type: 'sight:blocked', actorId: unit.id, blockPos: game.units[blockerId].pos })
+          promptPlayerDecision(game, unit.id, 30)
+          continue
+        }
+
+        //
+        // Target is in line of sight; execute the skill.
         //
         var gameEffects = skill.effects
           .map( eff => applySkillEffect(game, unit, target, eff) )
@@ -255,9 +276,8 @@ export function gameStep (game: GameState): App.Step {
         game.intents[id] = { type: 'passive' }
       }
       else {
-        //
-        // TODO: NOTIFY PLAYER THAT UNIT IS OUT OF RANGE
-        //
+        game.timeline[id] = { type: 'wait', value: game.meta.baseCooldown }
+        effects.push({ type: 'skill:oor', actorId: unit.id, skill: skill.name })
       }
     }
   }
@@ -319,7 +339,7 @@ function promptPlayerDecision (game: GameState, unitId: App.UnitId, afterFrames=
 function unitAt (game: GameState, x: number, y: number) {
   return Object.keys(game.units).find( id =>
     game.units[id].pos.x === x && game.units[id].pos.y === y
-  )
+  ) || null
 }
 
 function calcDirection (x: number) {
