@@ -18,6 +18,10 @@ export default {
   },
   view(vnode) {
     var game = vnode.attrs.game
+    var maxWait = game.meta.timelineWaitSize
+    var timelineWaitWidth = vnode.state.width - actWidth
+
+    // console.log(">>timeline", maxWait, timelineWaitWidth) // Redraw debugging
 
     return m('.timeline',
 
@@ -36,11 +40,8 @@ export default {
         var unit = game.units[unitId]
         if ( ! unit ) return;
 
-        var max = game.meta.timelineWaitSize
-        var timelineWaitWidth = vnode.state.width - actWidth
-
         var offset = pos.type === 'wait'
-          ? (1 - pos.value / max) * timelineWaitWidth || 0
+          ? (1 - pos.value / maxWait) * timelineWaitWidth || 0
           : timelineWaitWidth + (pos.current / pos.target * actWidth)
 
         var style = {

@@ -36,7 +36,7 @@ export var initialGameState: GameState = {
     }
   },
   timeline: {
-    'gob_1': { type: 'wait', value: 60 },
+    'gob_1': { type: 'wait', value: 120 },
   },
 
   pendingDecisions: {},
@@ -48,6 +48,7 @@ export var initialGameState: GameState = {
   inputs: {},
 
   meta: {
+    name: GameAssets.settings.gameName,
     timelineWaitSize: 30 * 10, // 10 seconds
     fps: 30,
     skills: GameAssets.skills,

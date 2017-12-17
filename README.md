@@ -20,7 +20,7 @@ $ npm install
 $ npm start
 ```
 
-Now visit [localhost:4242](http://localhost:4242).
+Now visit [localhost:4242](http://localhost:4242). The default Game Master id/password is `gm` / `123`
 
 ## Gameplay
 

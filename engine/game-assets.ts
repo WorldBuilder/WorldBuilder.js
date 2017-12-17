@@ -9,11 +9,27 @@ var createPlanner = require('l1-path-finder')
 
 
 var maps: App.Map[] = []
+
 export var skills: App.Skill[] = []
 export var players: App.Player[] = []
+export var settings: t.Static<typeof SettingsChecker>
+export var passwords: Record<string,string> = {}
 
 
 export function sync () {
+
+  console.log('[Startup] Loading settings...')
+  var source = readFileSync(__dirname + '/../game-assets/settings.toml', 'utf8')
+
+  try {
+    settings = SettingsChecker.check( TOML.parse(source) )
+  }
+  catch (error) {
+    console.error('ERROR: Invalid player definition in game-assets/players.toml')
+    console.error('  ', error.message)
+    return process.exit(1) // ts doesn't know process.exit quits, so we return to appease.
+  }
+
 
   console.log('[Startup] Loading skill definitions...')
   var source = readFileSync(__dirname + '/../game-assets/skills.toml', 'utf8')
@@ -55,8 +71,12 @@ export function sync () {
       return process.exit(1) // ts doesn't know process.exit quits, so we return to appease.
     }
 
+    var {password, ...withoutPassword} = clean
+
+    passwords[clean.id] = password
+
     var final: App.Player = {
-      ...clean,
+      ...withoutPassword,
       type: 'player',
     }
 
@@ -175,6 +195,11 @@ function transpose<T> (arr: T[][]) {
   }
   return result
 }
+
+const SettingsChecker = t.Record({
+  gameName: t.String,
+  gameMasterPassword: t.String,
+})
 
 // THIS SHOULD MIRROR THAT IN typings/app.d.ts!!
 const PlayerChecker = t.Record({

@@ -24,7 +24,7 @@ declare namespace App {
 
 
   export type Unit = Player | Enemy
-  export type Player = { id: UnitId, type: 'player', password: string } & UnitBase
+  export type Player = { id: UnitId, type: 'player' } & UnitBase
   export type Enemy  = { id: UnitId, type: 'enemy', aiType: null | string } & UnitBase
 
   type TimelinePosWait
@@ -96,6 +96,7 @@ declare namespace App {
     inputs: Record<UnitId, UserInput>,
 
     meta: {
+      name: string,
       timelineWaitSize: number,
       fps: number,
       skills: Skill[],

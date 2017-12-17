@@ -1,7 +1,7 @@
 
 [[player]]
 id = "alice"
-password = "abc"
+password = "123"
 name = "Alice"
 size = 25
 currentHp = 30
@@ -20,7 +20,7 @@ wis = 10
 
 [[player]]
 id = "bob"
-password = "xyz"
+password = "123"
 name = "Bob"
 size = 25
 currentHp = 30

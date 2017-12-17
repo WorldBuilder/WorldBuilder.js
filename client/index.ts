@@ -1,34 +1,26 @@
 import * as m from 'mithril'
+(window as any).m = m // For debugging
 
 import Game from './models/game'
 
-import Map from './components/map'
-import Timeline from './components/timeline'
-import UnitStats from './components/unit-stats'
+import SessionPanel from './components/session-panel'
+import GameUI from './components/game-ui'
 
 
-function drawGame () {
-  var game = Game.state
-  if ( ! game ) return m('#ui', m('.loading', "Loading..."))
-  return m('#ui',
-    m('.sidebar',
-      m(UnitStats, { game })
-    ),
-    m('.main',
-      renderMapLabel(),
-      m('.scroller',
-        m(Map, { game })
-      ),
-      m(Timeline, { game })
-    ),
-  )
+function drawApp () {
+  // console.log(">>drawApp") // Redraw debugging
+  if ( Game.userPlayer || Game.isDM ) {
+    return m(GameUI, { game: Game.state })
+  }
+  else {
+    return m('#session.d-flex.flex-center',
+      m('div',
+        m('h1', "WorldBuilder.js"),
+        m('p', "Please sign in:"),
+        m(SessionPanel),
+      )
+    )
+  }
 }
 
-m.mount(document.body, { view: drawGame })
-
-function renderMapLabel () {
-  var mode = Game.mapMode
-  if ( mode.type === 'none' ) return m('.label')
-
-  return m('.label', mode.label)
-}
+m.mount(document.body, { view: drawApp })

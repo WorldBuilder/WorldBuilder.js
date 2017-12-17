@@ -6,6 +6,7 @@ import multicast from '@most/multicast'
 import DeepDiff = require('deep-diff')
 
 import Game from '../models/game'
+import { settings, players, passwords } from '../../engine/game-assets'
 import * as GameEngine from '../../engine'
 
 
@@ -14,21 +15,16 @@ export default function configWebsockets (server: Server) {
   var io = SocketIO(server, {})
 
   io.on('connection', socket => {
-    console.log("a user connected")
-    socket.emit('gs', { game: cleanGameStateForNetwork(Game.state), effects: [] })
-
-    //
-    // Attach player to connected user
-    //
-    // TODO: Calculate based on auth
+    console.log(`User connected (${socket.handshake.query.id || 'unknown'})`)
 
     var isDM = false
-    var userPlayer = Game.state.units['alice']
-    socket.emit('userPlayer', userPlayer)
+    var userPlayer: App.Player
 
-    // TODO: flag only on correct password event
-    isDM = true
-    socket.emit('dm')
+    socket.on('sign-in', signIn)
+
+    if ( socket.handshake.query.id && socket.handshake.query.password ) {
+      signIn(socket.handshake.query.id, socket.handshake.query.password)
+    }
 
     //
     // Register input by connected user.
@@ -47,22 +43,55 @@ export default function configWebsockets (server: Server) {
     })
 
 
+    function signIn (id: string, password: string) {
+      console.log("Sign in attempt", id, "::", password)
+      if ( isDM || userPlayer ) {
+        // Already signed in; ignore.
+        return
+      }
+
+      if ( id === 'gm' ) {
+        if ( password === settings.gameMasterPassword ) {
+          isDM = true
+          socket.emit('dm')
+          subscribe()
+        }
+        else {
+          socket.emit('session:unauthorized')
+        }
+      }
+      else {
+        if ( passwords[id] === password ) {
+          userPlayer = players.find( p => p.id === id )!
+          socket.emit('userPlayer', userPlayer)
+          subscribe()
+        }
+        else {
+          socket.emit('session:unauthorized')
+        }
+      }
+    }
+
     //
     // Subscribe socket to streaming game state updates
     //
-    var sub = stateStream.subscribe({
-      next: (step) => socket.emit('gs', step),
-      complete: () => socket.disconnect(),
-      error: (err) => {
-        console.log("Error:", err)
-        socket.disconnect()
-      }
-    })
+    function subscribe () {
+      console.log('Sign in success!')
 
-    socket.on('disconnect', () => {
-      console.log('disconnect')
-      sub.unsubscribe()
-    })
+      var sub = stateStream.subscribe({
+        next: (step) => socket.emit('gs', step),
+        complete: () => socket.disconnect(),
+        error: (err) => {
+          console.log("Error:", err)
+          socket.disconnect()
+        }
+      })
+
+      socket.on('disconnect', () => {
+        console.log('disconnect')
+        sub.unsubscribe()
+      })
+    }
   })
 
 }

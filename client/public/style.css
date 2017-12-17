@@ -13,10 +13,12 @@ body {
   margin-bottom: 0;
 }
 
-#ui {
+#ui, #session {
   height: 100vh;
-  display: grid;
   overflow: hidden;
+}
+#ui {
+  display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 300px 1fr;
   grid-template-areas: "sidebar main";
@@ -191,3 +193,24 @@ body {
   border-top: 1px solid #ccc;
   padding-top: 0.75rem;
 }
+
+
+
+/**
+ * Session Panel
+ */
+.session-panel {
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+/**
+ * Utility classes
+ */
+.d-flex { display: flex; }
+.flex { flex: 1; }
+.flex-center { justify-content: center; align-items: center; }
+.flex-vcenter { align-items: center; }
+.flex-col { flex-direction: column; }
+
+.text-center { text-align: center; }
