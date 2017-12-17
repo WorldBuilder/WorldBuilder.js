@@ -19,8 +19,8 @@ var mapMode = { type: 'none' } as MapMode
 var mapHoverEvent = Stream(null as null | App.Coordinate)
 var mapClickEvent = Stream(null as null | App.Coordinate)
 
-mapHoverEvent.map( _ => window.requestAnimationFrame(m.redraw) )
-mapClickEvent.map( _ => window.requestAnimationFrame(m.redraw) )
+mapHoverEvent.map( _ => m.redraw() )
+mapClickEvent.map( _ => m.redraw() )
 
 //
 // Connet to server and handle data syncing
@@ -42,25 +42,26 @@ socket.on('reconnect_attempt', () => { // Support Sign-out
 socket.on('gs', (step: App.Step) => {
   state = step.game
   step.effects.forEach( eff => console.log("Effect:", eff) )
-  window.requestAnimationFrame(m.redraw)
+  m.redraw()
 })
 
 socket.on('userPlayer', (player: App.Player) => {
   console.log("Signed in as player:", player)
   userPlayer = player
-  window.requestAnimationFrame(m.redraw)
+  m.redraw()
 })
 
 socket.on('dm', () => {
+  console.log("Signed in as Game Master")
   isDM = true
-  window.requestAnimationFrame(m.redraw)
+  m.redraw()
 })
 
 socket.on('session:unauthorized', () => {
   alert('Invalid id + password.')
   userPlayer = null
   isDM = false
-  window.requestAnimationFrame(m.redraw)
+  m.redraw()
 })
 
 //

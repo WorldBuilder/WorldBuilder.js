@@ -8,7 +8,6 @@ import GameUI from './components/game-ui'
 
 
 function drawApp () {
-  // console.log(">>drawApp") // Redraw debugging
   if ( Game.userPlayer || Game.isDM ) {
     return m(GameUI, { game: Game.state })
   }

@@ -77,6 +77,7 @@ export default function configWebsockets (server: Server) {
     //
     function subscribe () {
       console.log('Sign in success!')
+      socket.emit('gs', { game: cleanGameStateForNetwork(Game.state), effects: [] })
 
       var sub = stateStream.subscribe({
         next: (step) => socket.emit('gs', step),

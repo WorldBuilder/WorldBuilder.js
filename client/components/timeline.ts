@@ -15,13 +15,16 @@ interface State {
 export default {
   oncreate(vnode) {
     vnode.state.width = vnode.dom.clientWidth - padding*2
+    // oncreate happens at the end of a redraw.
+    // Because we've updated state, we need to redraw again to reflect the change.
+    window.requestAnimationFrame(m.redraw)
   },
   view(vnode) {
+    if ( ! vnode.state.width ) return m('.timeline')
+
     var game = vnode.attrs.game
     var maxWait = game.meta.timelineWaitSize
     var timelineWaitWidth = vnode.state.width - actWidth
-
-    // console.log(">>timeline", maxWait, timelineWaitWidth) // Redraw debugging
 
     return m('.timeline',
 
