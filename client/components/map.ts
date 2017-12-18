@@ -26,12 +26,14 @@ export default {
       width: game.map.width * game.map.tileSize,
     }
 
-    return m('.map',
+    return m('.map#map',
       { style, onclick: handleClick, oncontextmenu: handleRightClick },
 
       m('.scroll-padding-hack'),
 
-      Game.units.map( unit => [
+      // Sort by y position to avoid DOM bug where health bars get
+      // overlaid by other units
+      Game.units.sort((a,b) => a.pos.y - b.pos.y).map( unit => [
         renderUnit(game, unit),
       ]),
 
@@ -45,11 +47,13 @@ function renderUnit (game: App.GameState, unit: App.Unit) {
   var pos = unit.pos
   var unitSize = unit.size * 1 // unit.size is radius
 
-  var style = {
-    transform: `translate(${ pos.x * game.map.tileSize }px, ${ pos.y * game.map.tileSize }px)`,
+  var unitStyle = {
     width: unitSize + 'px',
     height: unitSize + 'px',
     lineHeight: unitSize + 'px',
+  }
+  var posStyle = {
+    transform: `translate(${ pos.x * game.map.tileSize }px, ${ pos.y * game.map.tileSize }px)`,
   }
 
   var hp = {
@@ -57,11 +61,15 @@ function renderUnit (game: App.GameState, unit: App.Unit) {
     current: { width: `${unit.currentHp / unit.maxHp * 100}%` },
   }
 
-  return m('.unit', Game.unitFocus(['stats', 'target'], ['stats'], unit.id, { style: style, class: unit.type }),
+  return m(`.unit[data-unit-id=${unit.id}]`, { style: posStyle },
+    // This body div is necessary for easier animation manipulation
+    m('.body',
+      Game.unitFocus(['stats', 'target'], ['stats'], unit.id, { style: unitStyle, class: unit.type }),
 
-    m('.bar-max', { style: hp.max }, m('.bar', { style: hp.current })),
+      m('.bar-max', { style: hp.max }, m('.bar', { style: hp.current })),
 
-    unit.name[0].toUpperCase()
+      unit.name[0].toUpperCase()
+    )
   )
 }
 

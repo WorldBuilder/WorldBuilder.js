@@ -76,25 +76,27 @@ body {
   user-select: none
 }
 .map > .unit {
+  position: absolute;
+  transition: transform 0.25s cubic-bezier(0.09, 0.93, 0.71, 1.1);
+}
+.map > .unit > .body {
   background: #ccc;
   border: 2px solid transparent;
   border-radius: 9999px;
-  position: absolute;
   text-align: center;
-  transition: transform 0.25s cubic-bezier(0.09, 0.93, 0.71, 1.1);
 }
-  .map > .unit.focus--stats {
+  .map > .unit > .body.focus--stats {
     border-color: var(--focus-stats-color);
   }
-  .map > .unit.focus--target {
+  .map > .unit > .body.focus--target {
     border-color: var(--focus-target-color);
   }
-.map > .unit .bar-max {
+.map > .unit > .body .bar-max {
   background: #a00;
   height: 3px;
   position: absolute; top: -7px;
 }
-.map > .unit .bar {
+.map > .unit > .body .bar {
   background: #0a0;
   height: 3px;
 }

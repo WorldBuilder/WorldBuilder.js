@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Animation Playground</title>
+  <link rel="stylesheet" type="text/css" href="/shapes.css">
+</head>
+<body>
+<h1>Animate!</h1>
+
+<div id="map">
+  <ul>
+    <li id="shake" style="transform: translate3d(100px,0,0)"><div>Hit Shake</div></li>
+    <li id="punch" data-unit-id="pnch" style="transform: translate3d(50px,50px,0)"><div>Punch</div></li>
+    <li id="smacked" data-unit-id="smkd" style="transform: translate3d(120px,50px,0)"><div>Smacked</div></li>
+    <li id="number" data-unit-id="num" style="transform: translate3d(120px,25px,0)"><div>Number</div></li>
+  </ul>
+</div>
+
+
+<style>
+  #map {
+    position: relative;
+  }
+  #map li {
+    text-decoration: underline;
+    cursor: pointer;
+    position: absolute;
+    perspective: 600px;
+  }
+  #map li:hover {
+    background: #eee;
+  }
+</style>
+
+<script src="/assets/vendor-bundle.js"></script>
+<script src="/assets/animation-lab-bundle.js"></script>
+</body>
+</html>

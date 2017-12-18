@@ -155,7 +155,14 @@ declare namespace App {
         target: Coordinate,
       }
     | {
-        type: 'battle:hp',
+        type: 'skill:hit',
+        skill: SkillId,
+        actorId: UnitId,
+        targetId: UnitId,
+        effects: Effect[]
+      }
+    | {
+        type: 'skill:damage',
         actorId: UnitId,
         targetId: UnitId,
         mod: number, // negative for damage, positive for heal, zero for miss.
@@ -200,6 +207,7 @@ declare namespace App {
     },
     target: SkillTarget,
     effects: SkillEffect[],
+    animation: string,
   }
 
   export type SingleTarget = { type: 'single', valid: 'ally' | 'enemy' | 'any' }
@@ -219,4 +227,8 @@ declare namespace App {
   // Util
   //
   type Coordinate = { x: number, y: number }
+  type DirectionCoordinate = {
+    x: -1 | 0 | 1,
+    y: -1 | 0 | 1,
+  }
 }

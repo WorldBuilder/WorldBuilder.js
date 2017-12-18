@@ -30,6 +30,13 @@ export default function configAssets (server: Application) {
     ],
   }))
 
+  server.get('/assets/animation-lab-bundle.js', browserify('./client/animation-lab.ts', {
+    external: external,
+    plugins: [
+      { plugin: "tsify", options: { target: "es6" } }
+    ],
+  }))
+
   //
   // Static assets (html, etc.)
   //

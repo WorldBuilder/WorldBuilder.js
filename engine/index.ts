@@ -1,5 +1,6 @@
 import * as Battle from './battle'
 import * as GameAssets from './game-assets'
+import { calcDirection } from './util'
 var bline = require('bresenham-line')
 
 type Unit = App.Unit
@@ -264,10 +265,17 @@ export function gameStep (game: GameState): App.Step {
         //
         // Target is in line of sight; execute the skill.
         //
-        var gameEffects = skill.effects
+        var skillGameEffects = skill.effects
           .map( eff => applySkillEffect(game, unit, target, eff) )
+          .reduce((a,b) => a.concat(b))
 
-        effects = effects.concat(...gameEffects)
+        effects.push({
+          type: 'skill:hit',
+          skill: skill.name,
+          actorId: unit.id,
+          targetId: target.id,
+          effects: skillGameEffects,
+        })
 
         //
         // The skill has been performed; we're done (for now).
@@ -311,7 +319,7 @@ function applySkillEffect (game: GameState, actor: Unit, target: Unit, effect: S
 
     target.currentHp = Math.max(target.currentHp - damage, 0)
 
-    return [{ type: 'battle:hp', actorId: actor.id, targetId: target.id, mod: 0-damage }]
+    return [{ type: 'skill:damage', actorId: actor.id, targetId: target.id, mod: 0-damage }]
   }
   else if ( effect.type === 'setback' ) {
     var time = game.timeline[target.id]
@@ -340,9 +348,4 @@ function unitAt (game: GameState, x: number, y: number) {
   return Object.keys(game.units).find( id =>
     game.units[id].pos.x === x && game.units[id].pos.y === y
   ) || null
-}
-
-function calcDirection (x: number) {
-  if ( x === 0 ) return 0
-  return x < 0 ? -1 : 1
 }

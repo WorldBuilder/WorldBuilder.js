@@ -73,7 +73,7 @@ WorldBuilder.js is in early stages. However, the road to being minimally viable 
   - [x] Pause when it's a player's turn to decide on an action
   - [x] Implement movement as an action (with pathfinding)
   - [x] When a skill is done, set back unit on the timeline based on the skill's cooldown
-  - [ ] Implement basic attack animation
+  - [x] Implement basic attack animation
   - [ ] Implement timeline pausing for certain skill / item animations
 - [x] Foundation for making battle decisions (skills, items, etc.)
 - [x] Implement skill system

@@ -1,6 +1,7 @@
 import * as io from 'socket.io-client'
 import * as m from 'mithril'
 import * as Stream from 'mithril/stream'
+import * as Effect from './effect'
 
 
 var state: App.GameState;
@@ -41,7 +42,7 @@ socket.on('reconnect_attempt', () => { // Support Sign-out
 
 socket.on('gs', (step: App.Step) => {
   state = step.game
-  step.effects.forEach( eff => console.log("Effect:", eff) )
+  step.effects.forEach( eff => Effect.handle(state, eff) )
   m.redraw()
 })
 

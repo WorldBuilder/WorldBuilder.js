@@ -4,6 +4,7 @@ name = "melee-attack"
 description = """
   Nothing feels better than a good old punch in the face.
 """
+animation = "punch"
 range = 1
 time = { startup = 0.5, cooldown = 0.5, recharge = 1 }
 target = { type = "single", valid = "enemy" }
@@ -24,6 +25,7 @@ name = "wind-up-punch"
 description = """
   Time to charge, baby.
 """
+animation = "punch"
 range = 1
 time = { startup = 8, cooldown = 0, recharge = 0 }
 target = { type = "single", valid = "enemy" }
@@ -44,6 +46,7 @@ name = "singe"
 description = """
   Singe your enemy with a quick magic strike.
 """
+animation = "none"
 range = 2
 time = { startup = 0.25, cooldown = 0, recharge = 4 }
 target = { type = "single", valid = "enemy" }
@@ -64,6 +67,7 @@ name = "fumes"
 description = """
   Cause blindness in an area of effect.
 """
+animation = "none"
 range = 4
 time = { startup = 0.5, cooldown = 1, recharge = 12 }
 target = { type = "radius", size = 50, affects = "all" }
@@ -80,6 +84,7 @@ name = "mend"
 description = """
   Mend a bit of health of one of your allies.
 """
+animation = "none"
 range = 6
 time = { startup = 0.5, cooldown = 0.5, recharge = 5 }
 target = { type = "single", valid = "ally" }

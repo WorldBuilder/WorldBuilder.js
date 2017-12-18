@@ -43,6 +43,7 @@ export function sync () {
       name: sk.name,
       range: sk.range || 100,
       cost: sk.cost || 0,
+      animation: sk.animation || '',
       time: {
         startup: sk.time.startup || 0.5,
         cooldown: sk.time.cooldown || 0,
