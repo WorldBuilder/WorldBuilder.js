@@ -68,7 +68,7 @@ socket.on('session:unauthorized', () => {
 //
 // Return one single object for convenience
 //
-export default {
+const Game = {
 
   mapHoverEvent: mapHoverEvent,
   mapClickEvent: mapClickEvent,
@@ -93,6 +93,9 @@ export default {
   },
   act (actorId: string, input: App.UserInput) {
     socket.emit('user-input', actorId, input)
+
+    // These highlights should be irrelevant after a decision.
+    Game.clearUnitFocus(['stats', 'target'])
   },
 
   get units () {
@@ -138,7 +141,12 @@ export default {
    obj.class = className
     return obj
   },
+  clearUnitFocus (types: string[]) {
+    types.forEach( t => delete selectedUnitIds[t] )
+  }
 }
+
+export default Game
 
 //
 // UI helpers
