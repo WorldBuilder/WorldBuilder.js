@@ -12,6 +12,7 @@ var maps: App.Map[] = []
 
 export var skills: App.Skill[] = []
 export var players: App.Player[] = []
+export var enemyTemplates: App.EnemyTemplate[] = []
 export var settings: t.Static<typeof SettingsChecker>
 export var passwords: Record<string,string> = {}
 
@@ -33,9 +34,9 @@ export function sync () {
 
   console.log('[Startup] Loading skill definitions...')
   var source = readFileSync(__dirname + '/../game-assets/skills.toml', 'utf8')
-  var importedSkills = TOML.parse(source)
+  var importedEnemies = TOML.parse(source)
 
-  skills = importedSkills.skill.map( (sk: any) => {
+  skills = importedEnemies.skill.map( (sk: any) => {
 
     sk.time = sk.time || {}
 
@@ -54,6 +55,29 @@ export function sync () {
     }
 
     return imported
+  })
+
+
+  console.log('[Startup] Loading enemy templates...')
+  var source = readFileSync(__dirname + '/../game-assets/enemies.toml', 'utf8')
+  var importedEnemies = TOML.parse(source)
+
+  enemyTemplates = importedEnemies.enemy.map( (en: any) => {
+
+    try {
+      console.log('  > Loading', en.typeId)
+      var clean = EnemyTemplateChecker.check(en)
+    }
+    catch (error) {
+      console.error('ERROR: Invalid enemy definition in game-assets/enemies.toml')
+      console.error('  ', error.message)
+      return process.exit(1) // ts doesn't know process.exit quits, so we return to appease.
+    }
+
+    // typecheck against app.d.ts definition
+    var final: App.EnemyTemplate = clean
+
+    return final
   })
 
 
@@ -203,6 +227,18 @@ const SettingsChecker = t.Record({
 })
 
 // THIS SHOULD MIRROR THAT IN typings/app.d.ts!!
+const SkillsChecker = t.Array(t.String)
+// THIS SHOULD MIRROR THAT IN typings/app.d.ts!!
+const StatsChecker = t.Record({
+  con: t.Number,
+  dex: t.Number,
+  int: t.Number,
+  mov: t.Number,
+  str: t.Number,
+  wis: t.Number,
+})
+
+// THIS SHOULD MIRROR THAT IN typings/app.d.ts!!
 const PlayerChecker = t.Record({
   id: t.String,
   password: t.String,
@@ -212,13 +248,17 @@ const PlayerChecker = t.Record({
   pos: t.Record({ x: t.Number, y: t.Number }),
   currentHp: t.Number,
   maxHp: t.Number,
-  stats: t.Record({
-    con: t.Number,
-    dex: t.Number,
-    int: t.Number,
-    mov: t.Number,
-    str: t.Number,
-    wis: t.Number,
-  }),
-  skills: t.Array(t.String),
+  stats: StatsChecker,
+  skills: SkillsChecker,
+})
+
+// THIS SHOULD MIRROR THAT IN typings/app.d.ts!!
+const EnemyTemplateChecker = t.Record({
+  typeId: t.String,
+
+  name: t.String,
+  size: t.Number,
+  maxHp: t.Number,
+  stats: StatsChecker,
+  skills: SkillsChecker,
 })

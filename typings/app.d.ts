@@ -6,8 +6,6 @@ declare namespace App {
   interface UnitBase {
     name: string,
     size: number,
-    pos: Coordinate,
-    currentHp: number,
     maxHp: number,
     stats: UnitStats,
     skills: SkillId[]
@@ -22,10 +20,16 @@ declare namespace App {
     wis: number,
   }
 
+  interface UnitLiveStats {
+    pos: Coordinate,
+    currentHp: number,
+  }
+
 
   export type Unit = Player | Enemy
-  export type Player = { id: UnitId, type: 'player' } & UnitBase
-  export type Enemy  = { id: UnitId, type: 'enemy', aiType: null | string } & UnitBase
+  export type Player = { id: UnitId, type: 'player' } & UnitBase & UnitLiveStats
+  export type Enemy  = { id: UnitId, type: 'enemy' } & UnitBase & UnitLiveStats
+  export type EnemyTemplate = { typeId: string } & UnitBase
 
   type TimelinePosWait
     = {

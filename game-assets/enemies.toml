@@ -1,0 +1,15 @@
+
+[[enemy]]
+typeId = "goblin"
+name = "Goblin"
+size = 25
+maxHp = 20
+skills = ["melee-attack"]
+
+[enemy.stats]
+con = 10
+dex = 10
+int = 10
+mov = 10
+str = 10
+wis = 10

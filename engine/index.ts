@@ -18,7 +18,6 @@ export var initialGameState: GameState = {
   map: GameAssets.loadMap('example'),
   units: {
     'gob_1': {
-      aiType: 'passive',
       type: 'enemy',
       id: 'gob_1',
       name: 'Goblin',
